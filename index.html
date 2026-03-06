@@ -50,7 +50,7 @@
         transparent 1px,
         transparent 4px
       );
-    pointer-events: none;
+    pointer-events: none !important;
     z-index: 9998;
   }
 
@@ -60,7 +60,7 @@
     position: fixed;
     inset: 0;
     background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.85) 100%);
-    pointer-events: none;
+    pointer-events: none !important;
     z-index: 9997;
   }
 
@@ -113,7 +113,7 @@
     height: 60px;
     background: linear-gradient(transparent, rgba(0,255,65,0.04), transparent);
     animation: scanline 8s linear infinite;
-    pointer-events: none;
+    pointer-events: none !important;
     z-index: 9996;
   }
 
@@ -123,13 +123,18 @@
     inset: 0;
     background: var(--darker);
     z-index: 5000;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     gap: 4px;
     padding: 40px;
-    animation: flicker 0.1s ease infinite;
+    pointer-events: none;
+  }
+
+  #bootScreen.active {
+    display: flex;
+    pointer-events: all;
   }
 
   .boot-line {
@@ -148,7 +153,7 @@
 
   /* MAIN TERMINAL */
   #terminal {
-    display: none;
+    display: block;
     min-height: 100vh;
     padding: 20px;
     max-width: 900px;
@@ -490,6 +495,7 @@
     position: absolute;
     inset: 0;
     background: linear-gradient(135deg, rgba(0,255,65,0.03) 0%, transparent 60%);
+    pointer-events: none;
   }
 
   .cta-title {
@@ -905,6 +911,14 @@
   // BOOT SEQUENCE
   const loadDots = document.getElementById('loadDots');
   let dotCount = 0;
+
+  // Show terminal immediately so buttons are always accessible
+  document.getElementById('terminal').style.display = 'block';
+
+  // Only run boot animation if supported
+  const bootScreen = document.getElementById('bootScreen');
+  bootScreen.classList.add('active');
+
   const dotInterval = setInterval(() => {
     dotCount++;
     loadDots.textContent = '.'.repeat(dotCount % 4);
@@ -912,8 +926,8 @@
 
   setTimeout(() => {
     clearInterval(dotInterval);
-    document.getElementById('bootScreen').style.display = 'none';
-    document.getElementById('terminal').style.display = 'block';
+    bootScreen.classList.remove('active');
+    bootScreen.style.pointerEvents = 'none';
     animateProgressBars();
     updateLaunchCountdown();
   }, 4800);
