@@ -123,25 +123,29 @@
     inset: 0;
     background: var(--darker);
     z-index: 5000;
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     gap: 4px;
     padding: 40px;
+    pointer-events: all;
+    transition: opacity 0.5s ease;
+  }
+
+  #bootScreen.hidden {
+    opacity: 0;
     pointer-events: none;
   }
 
-  #bootScreen.active {
-    display: flex;
-    pointer-events: all;
+  #bootScreen.gone {
+    display: none;
   }
 
   .boot-line {
     font-size: 13px;
     color: var(--green-dim);
     opacity: 0;
-    animation: fadeIn 0.1s ease forwards;
     width: 100%;
     max-width: 600px;
   }
@@ -820,21 +824,21 @@
 
 <!-- BOOT SCREEN -->
 <div id="bootScreen">
-  <div class="boot-line" style="animation: fadeIn 0.3s ease 0.1s forwards">CITY NETWORK OS v4.9.1 // UNAUTHORIZED ACCESS DETECTED</div>
-  <div class="boot-line gap" style="animation: fadeIn 0.3s ease 0.2s forwards"></div>
-  <div class="boot-line" style="animation: fadeIn 0.3s ease 0.4s forwards">Initializing DEAD SIGNAL relay node...</div>
-  <div class="boot-line" style="animation: fadeIn 0.3s ease 0.7s forwards">Spoofing sector ID............... <span style="color:#00ff41">OK</span></div>
-  <div class="boot-line" style="animation: fadeIn 0.3s ease 1.0s forwards">Bypassing S3-CENTRAL firewall.... <span style="color:#00ff41">OK</span></div>
-  <div class="boot-line warn" style="animation: fadeIn 0.3s ease 1.3s forwards">WARNING: Sector 3 security trace active — 4:32 remaining</div>
-  <div class="boot-line" style="animation: fadeIn 0.3s ease 1.6s forwards">Decrypting intercepted transmissions......... <span style="color:#00ff41">OK</span></div>
-  <div class="boot-line err" style="animation: fadeIn 0.3s ease 1.9s forwards">ERROR: 3 files remain classified — clearance insufficient</div>
-  <div class="boot-line" style="animation: fadeIn 0.3s ease 2.2s forwards">Mounting sector 9 file index........................ <span style="color:#00ff41">OK</span></div>
-  <div class="boot-line gap" style="animation: fadeIn 0.3s ease 2.4s forwards"></div>
-  <div class="boot-line bright" style="animation: fadeIn 0.3s ease 2.6s forwards">DEAD SIGNAL terminal ready.</div>
-  <div class="boot-line" style="animation: fadeIn 0.3s ease 2.9s forwards">The world is fake. The neon lies.</div>
-  <div class="boot-line bright" style="animation: fadeIn 0.3s ease 3.2s forwards">This is what anarchy looks like.</div>
-  <div class="boot-line gap" style="animation: fadeIn 0.3s ease 3.4s forwards"></div>
-  <div class="boot-line" style="animation: fadeIn 0.3s ease 3.6s forwards">Loading interface<span id="loadDots"></span></div>
+  <div class="boot-line" style="animation: fadeIn 0.2s ease 0.05s forwards">CITY NETWORK OS v4.9.1 // UNAUTHORIZED ACCESS DETECTED</div>
+  <div class="boot-line gap" style="animation: fadeIn 0.2s ease 0.1s forwards"></div>
+  <div class="boot-line" style="animation: fadeIn 0.2s ease 0.2s forwards">Initializing DEAD SIGNAL relay node...</div>
+  <div class="boot-line" style="animation: fadeIn 0.2s ease 0.35s forwards">Spoofing sector ID............... <span style="color:#00ff41">OK</span></div>
+  <div class="boot-line" style="animation: fadeIn 0.2s ease 0.5s forwards">Bypassing S3-CENTRAL firewall.... <span style="color:#00ff41">OK</span></div>
+  <div class="boot-line warn" style="animation: fadeIn 0.2s ease 0.65s forwards">WARNING: Sector 3 security trace active — 4:32 remaining</div>
+  <div class="boot-line" style="animation: fadeIn 0.2s ease 0.8s forwards">Decrypting intercepted transmissions......... <span style="color:#00ff41">OK</span></div>
+  <div class="boot-line err" style="animation: fadeIn 0.2s ease 0.95s forwards">ERROR: 3 files remain classified — clearance insufficient</div>
+  <div class="boot-line" style="animation: fadeIn 0.2s ease 1.1s forwards">Mounting sector 9 file index........................ <span style="color:#00ff41">OK</span></div>
+  <div class="boot-line gap" style="animation: fadeIn 0.2s ease 1.2s forwards"></div>
+  <div class="boot-line bright" style="animation: fadeIn 0.2s ease 1.3s forwards">DEAD SIGNAL terminal ready.</div>
+  <div class="boot-line" style="animation: fadeIn 0.2s ease 1.45s forwards">The world is fake. The neon lies.</div>
+  <div class="boot-line bright" style="animation: fadeIn 0.2s ease 1.6s forwards">This is what anarchy looks like.</div>
+  <div class="boot-line gap" style="animation: fadeIn 0.2s ease 1.7s forwards"></div>
+  <div class="boot-line" style="animation: fadeIn 0.2s ease 1.8s forwards">Loading interface<span id="loadDots"></span></div>
 </div>
 
 <!-- MAIN TERMINAL -->
@@ -1098,12 +1102,7 @@
   const loadDots = document.getElementById('loadDots');
   let dotCount = 0;
 
-  // Show terminal immediately so buttons are always accessible
-  document.getElementById('terminal').style.display = 'block';
-
-  // Only run boot animation if supported
   const bootScreen = document.getElementById('bootScreen');
-  bootScreen.classList.add('active');
 
   const dotInterval = setInterval(() => {
     dotCount++;
@@ -1112,11 +1111,12 @@
 
   setTimeout(() => {
     clearInterval(dotInterval);
-    bootScreen.classList.remove('active');
+    bootScreen.style.opacity = '0';
     bootScreen.style.pointerEvents = 'none';
+    setTimeout(() => { bootScreen.style.display = 'none'; }, 400);
     animateProgressBars();
     updateLaunchCountdown();
-  }, 4800);
+  }, 2400);
 
   // LAUNCH COUNTDOWN
   function updateLaunchCountdown() {
@@ -1328,7 +1328,7 @@
       clearTimeout(e05ClickTimer);
       e05ClickCount = 0;
       if (titleEl) titleEl.textContent = 'TRANSMISSION 05.5 — UNLOCKED';
-      if (metaEl) metaEl.textContent = 'WHAT THEY DIDN'T AIR // NEVER BROADCAST';
+      if (metaEl) metaEl.textContent = 'WHAT THEY DIDN\u2019T AIR // NEVER BROADCAST';
       setTimeout(() => {
         document.getElementById('hiddenLoreOverlay').classList.add('open');
       }, 400);
