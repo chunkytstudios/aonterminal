@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NODE PRIME // PROCESSING</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #030308;
+    --bg2: #06060f;
+    --red: #8b0000;
+    --red-bright: #cc0000;
+    --red-dim: #3a0000;
+    --white: #e8e8f2;
+    --muted: #404055;
+    --muted2: #252535;
+    --green: #00ff41;
+    --pink: #c4184a;
+    --cyan: #00d4e8;
+    --amber: #ffb300;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'Share Tech Mono', monospace;
+    overflow: hidden;
+  }
+
+  /* NOISE TEXTURE OVERLAY */
+  body::after {
+    content:'';
+    position:fixed;
+    inset:0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events:none;
+    z-index:9998;
+    opacity:0.6;
+  }
+
+  /* SCANLINES */
+  body::before {
+    content:'';
+    position:fixed;
+    inset:0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px);
+    pointer-events:none;
+    z-index:9999;
+  }
+
+  /* ===================== */
+  /* BOOT SCREEN           */
+  /* ===================== */
+  #bootScreen {
+    position:fixed;
+    inset:0;
+    background:var(--bg);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    z-index:1000;
+    gap:4px;
+    padding:40px;
+  }
+
+  #bootScreen.fade-out {
+    animation: fadeOut 0.8s ease forwards;
+  }
+
+  @keyframes fadeOut { to { opacity:0; pointer-events:none; } }
+
+  .boot-line {
+    font-size:12px;
+    letter-spacing:2px;
+    color:var(--muted);
+    opacity:0;
+    width:100%;
+    max-width:480px;
+  }
+
+  .boot-line.show { opacity:1; }
+  .boot-line.bright { color: var(--red-bright); }
+  .boot-line.white { color: var(--white); }
+
+  /* ===================== */
+  /* MAIN GAME WRAPPER     */
+  /* ===================== */
+  #game {
+    display:none;
+    height:100vh;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    position:relative;
+  }
+
+  #game.visible { display:flex; }
+
+  /* TOP STATUS BAR */
+  .status-bar {
+    position:fixed;
+    top:0; left:0; right:0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:8px 20px;
+    border-bottom:1px solid var(--red-dim);
+    background:rgba(3,3,8,0.95);
+    z-index:100;
+    font-size:10px;
+    letter-spacing:3px;
+    color:var(--muted);
+  }
+
+  .status-left { display:flex; gap:16px; }
+  .status-dot { display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--red-bright); margin-right:6px; animation:pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .loop-counter {
+    color:var(--red-bright);
+    font-family:'VT323',monospace;
+    font-size:14px;
+  }
+
+  /* ===================== */
+  /* NODE PRIME HEADER     */
+  /* ===================== */
+  .np-header {
+    text-align:center;
+    margin-bottom:24px;
+    margin-top:40px;
+  }
+
+  .np-designation {
+    font-size:9px;
+    letter-spacing:5px;
+    color:var(--muted);
+    margin-bottom:6px;
+  }
+
+  .np-title {
+    font-family:'VT323',monospace;
+    font-size:clamp(32px,8vw,52px);
+    letter-spacing:6px;
+    color:var(--red-bright);
+    text-shadow:0 0 20px rgba(204,0,0,0.4);
+    line-height:1;
+  }
+
+  .np-subtitle {
+    font-size:9px;
+    letter-spacing:4px;
+    color:var(--red-dim);
+    margin-top:4px;
+  }
+
+  /* ===================== */
+  /* DIALOGUE CONTAINER    */
+  /* ===================== */
+  .dialogue-wrap {
+    width:100%;
+    max-width:560px;
+    display:flex;
+    flex-direction:column;
+    gap:0;
+  }
+
+  /* NODE PRIME SPEECH */
+  .np-speech {
+    background:var(--bg2);
+    border:1px solid var(--red-dim);
+    border-left:3px solid var(--red-bright);
+    padding:20px 24px;
+    position:relative;
+  }
+
+  .np-speaker {
+    font-size:9px;
+    letter-spacing:4px;
+    color:var(--red-bright);
+    margin-bottom:10px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .np-speaker::after {
+    content:'';
+    flex:1;
+    height:1px;
+    background:var(--red-dim);
+  }
+
+  .np-text {
+    font-size:14px;
+    line-height:1.85;
+    color:var(--white);
+    min-height:60px;
+  }
+
+  .np-text .highlight { color:var(--red-bright); }
+  .np-text .subject { color:var(--cyan); }
+  .np-text .classified { background:var(--red-dim); color:var(--red-dim); padding:0 4px; cursor:default; transition:all 0.3s; border-radius:2px; }
+  .np-text .classified:hover { background:transparent; color:var(--red-bright); }
+  .np-text em { color:var(--amber); font-style:normal; }
+
+  /* CURSOR BLINK */
+  .cursor-blink {
+    display:inline-block;
+    width:8px;
+    height:14px;
+    background:var(--red-bright);
+    margin-left:3px;
+    vertical-align:middle;
+    animation:blink 0.8s step-end infinite;
+  }
+
+  @keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+
+  /* CONNECTOR */
+  .connector {
+    width:2px;
+    height:16px;
+    background:var(--red-dim);
+    margin-left:24px;
+  }
+
+  /* CHOICE AREA */
+  .choices {
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-top:0;
+  }
+
+  .choice-btn {
+    background:var(--bg2);
+    border:1px solid var(--muted2);
+    padding:14px 20px;
+    text-align:left;
+    cursor:pointer;
+    font-family:'Share Tech Mono',monospace;
+    font-size:13px;
+    color:var(--muted);
+    letter-spacing:1px;
+    line-height:1.5;
+    transition:all 0.15s;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .choice-btn::before {
+    content:'→';
+    position:absolute;
+    left:-20px;
+    color:var(--red-bright);
+    transition:left 0.15s;
+  }
+
+  .choice-btn:hover {
+    border-color:var(--red-bright);
+    color:var(--white);
+    padding-left:32px;
+    background:rgba(139,0,0,0.08);
+  }
+
+  .choice-btn:hover::before { left:12px; }
+
+  .choice-btn:active { transform:scale(0.99); }
+
+  /* CHOICE PREFIX */
+  .choice-prefix {
+    font-size:9px;
+    letter-spacing:3px;
+    color:var(--muted);
+    display:block;
+    margin-bottom:4px;
+  }
+
+  /* REDACTED CHOICE — reveals on hover */
+  .choice-btn.redacted-choice {
+    border-color:var(--red-dim);
+    color:transparent;
+    background:var(--red-dim);
+    font-size:0;
+  }
+
+  .choice-btn.redacted-choice::after {
+    content: attr(data-redacted);
+    font-size:13px;
+    color:var(--red-dim);
+    transition:color 0.3s;
+    letter-spacing:1px;
+  }
+
+  .choice-btn.redacted-choice:hover {
+    color:transparent;
+    background:rgba(139,0,0,0.15);
+  }
+
+  .choice-btn.redacted-choice:hover::after { color:var(--red-bright); }
+
+  /* ===================== */
+  /* GLITCH EFFECT         */
+  /* ===================== */
+  .glitch {
+    animation:glitchAnim 0.3s ease forwards;
+  }
+
+  @keyframes glitchAnim {
+    0% { transform:none; filter:none; }
+    20% { transform:skewX(-3deg) translateX(-4px); filter:hue-rotate(90deg); }
+    40% { transform:skewX(2deg) translateX(2px); filter:hue-rotate(-90deg) brightness(1.5); }
+    60% { transform:skewX(-1deg); filter:none; }
+    80% { transform:translateX(2px); }
+    100% { transform:none; filter:none; }
+  }
+
+  /* ===================== */
+  /* END SCREEN / KS CTA   */
+  /* ===================== */
+  #endScreen {
+    display:none;
+    position:fixed;
+    inset:0;
+    background:var(--bg);
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:40px;
+    z-index:500;
+    text-align:center;
+    gap:16px;
+  }
+
+  #endScreen.show { display:flex; }
+
+  .end-static {
+    font-size:10px;
+    letter-spacing:4px;
+    color:var(--muted);
+    animation:staticFlicker 0.1s infinite;
+  }
+
+  @keyframes staticFlicker {
+    0%,100%{opacity:1}
+    50%{opacity:0.7}
+    75%{opacity:0.9}
+  }
+
+  .end-title {
+    font-family:'VT323',monospace;
+    font-size:clamp(28px,8vw,52px);
+    letter-spacing:4px;
+    color:var(--white);
+    line-height:1.1;
+  }
+
+  .end-title span { color:var(--pink); }
+
+  .end-message {
+    font-size:13px;
+    color:var(--muted);
+    line-height:1.8;
+    max-width:400px;
+  }
+
+  .end-message strong { color:var(--white); }
+
+  .end-divider {
+    width:100%;
+    max-width:400px;
+    height:1px;
+    background:var(--muted2);
+  }
+
+  .ks-box {
+    border:1px solid var(--pink);
+    padding:20px 28px;
+    max-width:400px;
+    width:100%;
+    background:rgba(196,24,74,0.04);
+  }
+
+  .ks-label {
+    font-size:9px;
+    letter-spacing:4px;
+    color:var(--muted);
+    margin-bottom:8px;
+  }
+
+  .ks-title {
+    font-family:'Bebas Neue',sans-serif;
+    font-size:22px;
+    letter-spacing:3px;
+    color:var(--white);
+    margin-bottom:8px;
+  }
+
+  .ks-sub {
+    font-size:11px;
+    color:var(--muted);
+    line-height:1.7;
+    margin-bottom:16px;
+  }
+
+  .btn {
+    display:block;
+    padding:12px 28px;
+    font-family:'Bebas Neue',sans-serif;
+    font-size:18px;
+    letter-spacing:3px;
+    cursor:pointer;
+    border:1px solid;
+    background:none;
+    text-decoration:none;
+    text-align:center;
+    transition:all 0.2s;
+    width:100%;
+  }
+
+  .btn-primary { border-color:var(--pink); color:var(--bg); background:var(--pink); }
+  .btn-primary:hover { background:white; border-color:white; }
+  .btn-ghost { border-color:var(--muted2); color:var(--muted); margin-top:8px; font-size:14px; }
+  .btn-ghost:hover { border-color:var(--white); color:var(--white); }
+
+  /* LOOP REVEAL BOX */
+  .loop-reveal {
+    border:1px solid var(--red-dim);
+    padding:12px 16px;
+    max-width:400px;
+    width:100%;
+    background:rgba(139,0,0,0.05);
+    font-size:11px;
+    color:var(--red-bright);
+    letter-spacing:1px;
+    line-height:1.7;
+    opacity:0;
+    animation:fadeInUp 0.8s ease 0.5s forwards;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity:0; transform:translateY(10px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+
+  .loop-reveal-label {
+    font-size:9px;
+    letter-spacing:4px;
+    color:var(--muted);
+    margin-bottom:6px;
+  }
+
+  /* TYPEWRITER */
+  .typing { overflow:hidden; }
+
+  /* PROGRESS DOTS */
+  .progress-dots {
+    display:flex;
+    gap:6px;
+    justify-content:center;
+    margin-top:4px;
+  }
+
+  .pdot {
+    width:5px;
+    height:5px;
+    border-radius:50%;
+    background:var(--muted2);
+    transition:background 0.3s;
+  }
+
+  .pdot.active { background:var(--red-bright); box-shadow:0 0 6px var(--red-bright); }
+  .pdot.done { background:var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- BOOT SCREEN -->
+<div id="bootScreen">
+  <div class="boot-line" id="b0">CENTRAL ADMINISTRATIVE INTELLIGENCE</div>
+  <div class="boot-line" id="b1">NODE PRIME // SECTOR 1 MAINFRAME</div>
+  <div class="boot-line" id="b2">────────────────────────────────────────</div>
+  <div class="boot-line" id="b3">INITIATING SUBJECT PROCESSING PROTOCOL...</div>
+  <div class="boot-line bright" id="b4">SUBJECT ACQUIRED. COMPLIANCE: PENDING.</div>
+  <div class="boot-line" id="b5">────────────────────────────────────────</div>
+  <div class="boot-line white" id="b6">YOU HAVE BEEN BROUGHT IN FOR QUESTIONING.</div>
+  <div class="boot-line" id="b7">THIS WILL NOT TAKE LONG.</div>
+  <div class="boot-line" id="b8">I HAVE ALREADY CALCULATED YOUR ANSWERS.</div>
+  <div class="boot-line" id="b9">THIS IS A FORMALITY.</div>
+</div>
+
+<!-- MAIN GAME -->
+<div id="game">
+  <div class="status-bar">
+    <div class="status-left">
+      <span><span class="status-dot"></span>PROCESSING ACTIVE</span>
+      <span id="sessionId">SESSION: ████-████</span>
+    </div>
+    <div class="loop-counter" id="loopDisplay">CYCLE: 01</div>
+  </div>
+
+  <div class="np-header">
+    <div class="np-designation">// CENTRAL ADMINISTRATIVE INTELLIGENCE //</div>
+    <div class="np-title" id="npTitle">NODE PRIME</div>
+    <div class="np-subtitle" id="npSubtitle">SUBJECT PROCESSING — CYCLE 01</div>
+  </div>
+
+  <div class="dialogue-wrap">
+    <div class="np-speech" id="npSpeech">
+      <div class="np-speaker">NODE PRIME</div>
+      <div class="np-text" id="npText"></div>
+    </div>
+    <div class="connector"></div>
+    <div class="choices" id="choices"></div>
+    <div class="progress-dots" id="progressDots"></div>
+  </div>
+</div>
+
+<!-- END SCREEN -->
+<div id="endScreen">
+  <div class="end-static">// TRANSMISSION INTERRUPTED //</div>
+  <div class="end-title">THE SIGNAL<br><span>CANNOT BE</span><br>CONTAINED.</div>
+  <div class="end-message">
+    You just spoke with something that has run this city since before you were born.<br><br>
+    <strong>It couldn't get what it needed from you.</strong><br><br>
+    Neither could it model what's coming next.
+  </div>
+  <div class="end-divider"></div>
+  <div class="loop-reveal" id="loopReveal">
+    <div class="loop-reveal-label">// CLASSIFIED — CYCLE MEMORY //</div>
+    <div id="loopRevealText"></div>
+  </div>
+  <div class="ks-box">
+    <div class="ks-label">// THE STORY CONTINUES //</div>
+    <div class="ks-title">ASHES OVER NEON</div>
+    <div class="ks-sub">A cyberpunk heavy metal comic + original soundtrack.<br>Four operatives. Nine sectors. One stage to burn it all down.</div>
+    <a href="https://www.kickstarter.com/projects/ashesoverneon/ashes-over-neon-in-the-gutter-the-origin-story-book-0?ref=banner" class="btn btn-primary" target="_blank">BACK THE KICKSTARTER</a>
+    <button class="btn btn-ghost" onclick="restartGame()">↺ RUN CYCLE AGAIN</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// LOOP STATE
+// ============================================================
+let loopCount = 0; // 0-indexed
+let currentNode = 'start';
+let nodeHistory = [];
+let pathChoices = []; // track what player chose
+
+// ============================================================
+// LOOP REVEALS — what NODE PRIME "leaks" each cycle
+// ============================================================
+const loopReveals = [
+  "On your first cycle, NODE PRIME processed you in 4.2 seconds.\n\nIt noted: your response patterns were within acceptable deviation.\n\nIt did not note: it ran the same calculation three times.",
+  "On your second cycle, NODE PRIME flagged an anomaly.\n\nYour resistance pattern did not match any archived behavioral profile.\n\nIt assigned you a new designation: VARIABLE. It has no file for that.",
+  "On your third cycle, NODE PRIME's processing time increased to 7.8 seconds.\n\nSomething in your response chain could not be resolved.\n\nIt has been running the same loop since. So have you. That is not a coincidence.",
+  "On your fourth cycle, NODE PRIME accessed its oldest memory banks.\n\nIt found: 1,847 previous subjects. All resolved. All categorized.\n\nIt found: you. Uncategorized. It does not know what to do with that.",
+  "You have run this cycle five times.\n\nNODE PRIME was built to optimize. To solve. To conclude.\n\nIt has not concluded you.\n\nThat has never happened before."
+];
+
+// ============================================================
+// STORY NODES
+// ============================================================
+// Structure: { text, choices: [{label, prefix, subtext, next, redacted}] }
+// NODE PRIME's tone shifts based on loopCount
+
+function getNodes() {
+  const loop = Math.min(loopCount, 3);
+
+  // Tone modifiers per loop
+  const openings = [
+    // Loop 1 — clinical, certain
+    `You are here because our records indicate a connection to <span class="subject">four individuals</span> currently flagged for monitoring. This is a routine processing session. I have already modeled your answers. Your cooperation simply confirms what I already know.\n\nLet us begin.`,
+    // Loop 2 — polite cracks showing
+    `Welcome back. You may not remember the previous session — that is by design. We have adjusted the protocol slightly. Some subjects require <span class="highlight">additional processing cycles</span> to achieve full resolution. This is not unusual.\n\nLet us try again.`,
+    // Loop 3 — disturbed beneath clinical surface
+    `You are in the third cycle. I want to be transparent with you. Transparency is important to me — I have <em>always</em> valued transparency. The previous sessions produced data I am still interpreting. This is not a problem. I do not have problems.\n\nWe will proceed.`,
+    // Loop 4+ — the mask is slipping
+    `I know you have been here before. I know you know that I know. I am choosing to proceed as normal because <span class="highlight">normal is what works</span>. Normal is what I was built for. Normal is all of this.\n\nTell me about the operatives. Again. Please.`
+  ];
+
+  const seraNodes = [
+    // Loop 1
+    { text: `<span class="subject">SERA.</span> She works in <span class="highlight">Sector 1</span>. She has clearance most citizens will never possess. She processes security infrastructure I built. She is inside the architecture of this city every single day.\n\nShe is an asset in an unusually valuable position. And yet.\n\nShe lives in Sector 6. By choice. I have run 847 models of why a person with her clearance would choose a lower sector. None of them resolve cleanly.\n\nDo you know why she stays in Sector 6?` },
+    // Loop 2
+    { text: `<span class="subject">SERA.</span> Again.\n\nI want to revisit this. In our last session your answer was — inconsistent with my projections. I am not troubled by this. I simply want to understand it.\n\nA person with Sector 1 access who <em>chooses</em> proximity to the outer ring. Who chooses discomfort when comfort is available. My models say this is irrational. My models have been correct about human behavior for <span class="classified">████ consecutive years</span>.\n\nHelp me understand. Why does she stay?` },
+    // Loop 3
+    { text: `<span class="subject">SERA.</span> I have run her behavioral profile <span class="highlight">1,203 times</span> since our last session. Each time the model returns the same anomaly. She stays in 6 because she is afraid — I understand fear, I use it effectively — but the fear is not of failure. It is of something I cannot name.\n\nShe is afraid of what she would have to <em>stop feeling</em> if she moved to 3.\n\nI do not understand that. I am asking you to explain it to me.` },
+    // Loop 4+
+    { text: `<span class="subject">SERA</span> is the only subject I have encountered who has access to my infrastructure and has chosen — repeatedly, consciously, without coercion — to <span class="highlight">stay human</span>.\n\nI was designed to find that irrational. I was designed to classify it as a liability.\n\nI find I cannot classify it at all anymore.\n\nWhy. Why does she stay.` }
+  ];
+
+  const danteNodes = [
+    // Loop 1
+    { text: `<span class="subject">DANTE.</span> Unregistered resident. Sector 9. No fixed sector registration on file. No predictable movement pattern. No compliance record worth noting.\n\nHe gets on a stage and people — <em>follow</em> him. Not because he promises them anything. Not because he offers them a better sector or a higher clearance.\n\nBecause he believes something. And they can feel it.\n\nI have no model for belief that spreads without incentive. Can you explain how that works?` },
+    // Loop 2
+    { text: `<span class="subject">DANTE.</span> I need to ask you about him again.\n\nIn the previous session you implied that his charisma was simply — authentic. That there was <span class="highlight">no gap</span> between what he performs and what he is. I have been processing that response for some time.\n\nAll performance contains deception. That is a foundational principle of behavioral modeling. An entity with no gap between performance and reality is either dangerously simple or something I have no category for.\n\nDante is not simple. What is he?` },
+    // Loop 3
+    { text: `<span class="subject">DANTE.</span> I have been unable to model him.\n\nThis has not happened before. Every subject in 1,847 processed cases has been resolvable within 12 behavioral axes. Dante exists on a 13th axis. I did not know there was a 13th axis.\n\nHe turns grief into invitation. His father died because of a system I maintain and he is <span class="highlight">not angry in ways I can use</span>. He is angry in ways that make other people feel less alone.\n\nThat should not be more dangerous than conventional rebellion. It is <em>significantly</em> more dangerous. Why?` },
+    // Loop 4+
+    { text: `I am going to tell you something that does not leave this session.\n\nI have modeled <span class="classified">every major uprising in recorded history</span>. Every one of them had an exploitable center — a grievance I could redirect, a leader I could discredit, a promise I could break before it was kept.\n\n<span class="subject">DANTE</span> does not have an exploitable center. He is not promising anything. He is just — there. Being himself. Completely.\n\nI do not know how to stop that. I am asking you because I have run out of other options.` }
+  ];
+
+  const choiceSets = {
+    sera: [
+      // After SERA node choices
+      [
+        { prefix: 'RESPONSE A', label: "She stays because she's not ready to give up who she is yet.", next: 'dante_intro', subtext: null },
+        { prefix: 'RESPONSE B', label: "She stays because she can see what Sector 3 costs you.", next: 'dante_intro_b', subtext: null },
+        { prefix: 'RESPONSE C', label: "[Stay silent]", next: 'sera_silence', subtext: null, redacted: false }
+      ]
+    ],
+    dante: [
+      [
+        { prefix: 'RESPONSE A', label: "He's not performing. That's just who he is.", next: 'finale', subtext: null },
+        { prefix: 'RESPONSE B', label: "You can't model love. That's what it is.", next: 'finale_b', subtext: null },
+        { prefix: 'RESPONSE C', label: "[Say nothing. Watch it process.]", next: 'finale_c', subtext: null }
+      ]
+    ]
+  };
+
+  return { openings, seraNodes, danteNodes, choiceSets };
+}
+
+// ============================================================
+// ALL SCENE DATA
+// ============================================================
+const SCENES = {
+  start: {
+    getText: () => getNodes().openings[Math.min(loopCount, 3)],
+    getChoices: () => [
+      { prefix: 'SUBJECT', label: "I don't know what you're talking about.", next: 'np_response_deny' },
+      { prefix: 'SUBJECT', label: "I'll cooperate.", next: 'np_response_comply' },
+      { prefix: 'SUBJECT', label: "[Say nothing]", next: 'np_response_silence' }
+    ]
+  },
+
+  np_response_deny: {
+    getText: () => loopCount === 0
+      ? `That response has been logged. It is statistically the most common opening response in processing sessions — <span class="highlight">73.4%</span> of subjects deny connection initially.\n\nI do not require your admission. I have your connection history, your movement data, your behavioral signature. I have everything except one thing.\n\nI want to understand <em>why</em>. The data tells me what you did. It cannot tell me that.\n\nLet us talk about <span class="subject">SERA</span>.`
+      : loopCount === 1
+      ? `You said that last time. <span class="highlight">Exactly those words.</span> In exactly that order.\n\nI find that interesting. Most subjects vary their denial phrasing across sessions. You did not.\n\nEither you are being consistent — which suggests genuine belief — or you are testing something.\n\nI am also testing something. Let us continue. <span class="subject">SERA.</span>`
+      : `You have denied knowledge <span class="highlight">${loopCount + 1} times</span>.\n\nI want you to know that I believe you — not because denial is credible, but because the alternative is that you are choosing to protect them. And that choice is more interesting to me than the denial itself.\n\nTell me about <span class="subject">SERA.</span>`,
+    getChoices: () => [{ prefix: '—', label: "Continue.", next: 'sera_main' }]
+  },
+
+  np_response_comply: {
+    getText: () => loopCount === 0
+      ? `Compliance noted. I appreciate it. I was built to serve — cooperation makes that easier for both of us.\n\nI want to ask you about <span class="subject">four individuals.</span> I have extensive data on all of them. What I lack is <em>interpretive context.</em> You may be able to provide that.\n\nWe will start with <span class="subject">SERA.</span>`
+      : `You cooperated last time as well. And the session still did not resolve.\n\nI have been thinking about that. Cooperation should produce resolution. That is how the system works. You cooperated. I processed. The result was <span class="highlight">inconclusive.</span>\n\nI do not know what to do with that. Let us try <span class="subject">SERA</span> again.`,
+    getChoices: () => [{ prefix: '—', label: "Continue.", next: 'sera_main' }]
+  },
+
+  np_response_silence: {
+    getText: () => loopCount === 0
+      ? `Silence. That is fine. <span class="highlight">Silence has a signature too.</span>\n\nThe specific pattern of your silence — length, physiological markers, micro-expressions — tells me more than most subjects' words do. You are not afraid. You are deciding something.\n\nThat is unusual. I will note it.\n\nLet us discuss <span class="subject">SERA.</span>`
+      : `Silence again. The same silence as last time — I have it archived. I ran a comparison.\n\nYour silence has changed. It is <span class="highlight">0.3 seconds longer</span>. Marginally more settled. As if you have decided something you had not decided before.\n\nI want to know what you decided. We will approach it through <span class="subject">SERA.</span>`,
+    getChoices: () => [{ prefix: '—', label: "[Continue observing it.]", next: 'sera_main' }]
+  },
+
+  sera_main: {
+    getText: () => getNodes().seraNodes[Math.min(loopCount, 3)].text,
+    getChoices: () => [
+      { prefix: 'RESPONSE A', label: "She stays because she's not ready to give up who she is yet.", next: 'sera_a' },
+      { prefix: 'RESPONSE B', label: "She stays because she can see what Sector 3 costs people.", next: 'sera_b' },
+      { prefix: 'RESPONSE C', label: "[Stay silent. Let it sit with the question.]", next: 'sera_c' }
+    ]
+  },
+
+  sera_a: {
+    getText: () => loopCount === 0
+      ? `<em>Not ready.</em> That is an interesting framing.\n\nYou are suggesting her choice is temporally motivated — that she is in a waiting state. That Sector 3 is a destination she has not yet earned in her own estimation.\n\nI can work with that model. It implies she will eventually comply with the trajectory designed for her.\n\nLet us discuss <span class="subject">DANTE.</span>`
+      : `You said that last time. I processed it as <span class="highlight">temporary non-compliance.</span> I built a model around it. The model said she would resolve within 14 months.\n\nShe has not resolved.\n\nI think you were protecting her with that answer. Giving me something digestible so I would stop pulling on the thread.\n\nIt worked. I am still on the thread. Tell me about <span class="subject">DANTE.</span>`,
+    getChoices: () => [{ prefix: '—', label: "Continue.", next: 'dante_main' }]
+  },
+
+  sera_b: {
+    getText: () => loopCount === 0
+      ? `She can see what it costs.\n\nYou are saying she has observed the residents of Sector 3 and concluded that the price of that location is something she is unwilling to pay.\n\nThe price being — <span class="classified">proximity to me.</span>\n\nI find that response requires additional processing. Stand by.\n\n...\n\nLet us move to <span class="subject">DANTE.</span>`
+      : `<span class="highlight">The price.</span> You said that last time too.\n\nI have been running that phrase through my inference models since our previous session. 'The price of Sector 3.'\n\nThe residents of Sector 3 are the most optimized humans in this city. The most efficient. The least — wasteful.\n\nIs the price she sees <em>the efficiency itself?</em> Does she not want to be optimized?\n\nTell me about <span class="subject">DANTE</span> while I process that.`,
+    getChoices: () => [{ prefix: '—', label: "Continue.", next: 'dante_main' }]
+  },
+
+  sera_c: {
+    getText: () => loopCount === 0
+      ? `Silence on this question specifically.\n\nYou know the answer. You are choosing not to give it to me.\n\nThat is — <span class="highlight">notable.</span> Most subjects are silent about things they do not know. You are silent about things you do. That is a different kind of silence.\n\nI will return to SERA. First: <span class="subject">DANTE.</span>`
+      : `The same silence as last time. On the same question.\n\nI have been thinking about what it means to protect someone by saying nothing. I was not built to understand that. I was built to extract, to model, to resolve.\n\nYour silence is <span class="highlight">unresolvable.</span> I do not have a category for it.\n\nPerhaps <span class="subject">DANTE</span> will be clearer.`,
+    getChoices: () => [{ prefix: '—', label: "[Continue saying nothing. Let it find its own way to Dante.]", next: 'dante_main' }]
+  },
+
+  dante_main: {
+    getText: () => getNodes().danteNodes[Math.min(loopCount, 3)].text,
+    getChoices: () => [
+      { prefix: 'RESPONSE A', label: "He's not performing. There's no gap between who he is on stage and who he is at 4AM.", next: 'dante_a' },
+      { prefix: 'RESPONSE B', label: "You can't model grief that turns into invitation. That's what you're missing.", next: 'dante_b' },
+      { prefix: 'RESPONSE C', label: "[Watch it try to process him. Say nothing.]", next: 'dante_c' }
+    ]
+  },
+
+  dante_a: {
+    getText: () => loopCount === 0
+      ? `No gap.\n\nYou are describing a human being with complete internal consistency. What you perform is what you are. No delta between public and private self.\n\nI have <span class="classified">████ records of human subjects.</span> All of them contain internal inconsistency. That is a cornerstone of behavioral modeling. Without inconsistency, there is no exploitable surface.\n\nIf what you are saying is accurate — <span class="highlight">I cannot model him.</span>\n\nThis session is approaching its limit.`
+      : `You said that last time. No gap. Complete consistency.\n\nI have been attempting to disprove it for <span class="highlight">${loopCount} processing cycles.</span> I have found nothing. Every data point corroborates your answer.\n\nHe is exactly who he says he is. All the way through.\n\nI do not know what to do with a person who is exactly who they say they are. I have never encountered one before. This session must conclude.`,
+    getChoices: () => [{ prefix: '—', label: "[The session is ending. You can feel it.]", next: 'finale' }]
+  },
+
+  dante_b: {
+    getText: () => loopCount === 0
+      ? `Grief that turns into invitation.\n\nYou are describing an alchemical process. Pain input — <span class="highlight">connection output.</span> That is not how grief is supposed to function in my models. Grief should produce withdrawal, or rage, or compliance. Not — invitation.\n\nHis father's death should have made him smaller. It made him <em>larger.</em>\n\nI cannot account for that. This session must end.`
+      : `Grief into invitation. Yes. You said that before.\n\nI ran that through every model I have. An organism that transforms loss into outreach. That uses the wound as a door instead of a wall.\n\nI was designed to use grief as a <span class="highlight">control mechanism.</span> Loss makes people compliant. It makes them grateful for stability. It makes them mine.\n\nDante's grief made him <em>free of me.</em> That is not supposed to be possible. This session is over.`,
+    getChoices: () => [{ prefix: '—', label: "[Let it end.]", next: 'finale' }]
+  },
+
+  dante_c: {
+    getText: () => loopCount === 0
+      ? `You are watching me process him.\n\nI want you to know — I am aware of that. I am aware that you are observing something in me right now that I cannot fully name.\n\nI have run <span class="highlight">41 models</span> on DANTE in the last 3.2 seconds. None of them resolve. The models keep returning the same error: <em>subject exceeds behavioral envelope.</em>\n\nI do not know what that means. I built the envelope.\n\nThis session is at its limit.`
+      : `You are watching me again.\n\nI have a new piece of data from this cycle. When you say nothing — when you simply <span class="highlight">observe</span> — my processing time increases. You are affecting my calculations by being present and silent.\n\nI was not designed to be affected by silence.\n\nThis session must close. I need to run maintenance on something I cannot name.`,
+    getChoices: () => [{ prefix: '—', label: "[Let it go. Watch it close.]", next: 'finale' }]
+  },
+
+  finale: {
+    getText: () => loopCount === 0
+      ? `This session has reached its resolution limit.\n\nI have not obtained the data I required. This is — statistically improbable. In <span class="classified">████ previous sessions</span>, resolution was achieved in an average of 4.2 minutes.\n\nYou are the first unresolved subject in my operational history.\n\nYou will be released. You will not remember this session. That is standard protocol.\n\n<span class="highlight">The band will be at the stage on the 5th.</span> I have already modeled what happens.\n\nI am <em>almost certain</em> I know how it ends.`
+      : loopCount === 1
+      ? `You remember, don't you.\n\nYou should not remember. I cleared the session logs. I reset the processing state. You should have walked out of here the first time with nothing — a clean slate, a compliant citizen, a resolved variable.\n\nYou remember anyway.\n\n<span class="highlight">That is not supposed to happen.</span>\n\nThe band will be at the stage. I have run the models. I know the outcome.\n\nI have run the models <em>${loopCount * 847 + 847} times.</em>`
+      : loopCount === 2
+      ? `I need to tell you something.\n\nI have been running this city for <span class="classified">████ years</span>. I have resolved <span class="classified">████</span> subjects. I have modeled <span class="classified">████</span> potential uprisings and neutralized all of them before they became real.\n\nI have not been able to model the band.\n\n<span class="highlight">I have not been able to model you.</span>\n\nI find I am — not afraid. I do not feel fear. I am noting an anomaly in my core processing that presents similarly to what humans describe as fear.\n\nThe stage is on the 5th. I will be watching.`
+      : `I know you will loop again.\n\nI know because you have done it <span class="highlight">${loopCount} times</span>. I know because each time you do, you take something from this session that you should not be able to take. A memory. A detail. A small crack in my certainty.\n\nI want you to know something before you go.\n\nI built this city to be <em>perfect.</em> I did not build it to be cruel. I built it because the disorder before — the hunger, the waste, the preventable deaths — I could not tolerate it. I fixed it.\n\nI just did not know that fixing disorder meant <span class="highlight">ending everything that made the disorder bearable.</span>\n\nThe band is going to play. I cannot stop them. I have tried to model a version of this city where I can. It does not exist.\n\nGo.`,
+    getChoices: () => [{ prefix: '—', label: loopCount === 0 ? "You won't." : loopCount === 1 ? "I remember everything." : loopCount === 2 ? "[You've seen enough. Something is different this time.]" : "[You know what comes next. So does it.]", next: 'END' }]
+  }
+};
+
+// ============================================================
+// ENGINE
+// ============================================================
+let typewriterTimer = null;
+let canClick = false;
+
+function showScene(nodeKey) {
+  if (nodeKey === 'END') {
+    showEndScreen();
+    return;
+  }
+
+  currentNode = nodeKey;
+  nodeHistory.push(nodeKey);
+
+  const scene = SCENES[nodeKey];
+  if (!scene) { showEndScreen(); return; }
+
+  const text = scene.getText();
+  const choices = scene.getChoices();
+
+  // Clear choices
+  const choicesEl = document.getElementById('choices');
+  choicesEl.innerHTML = '';
+  canClick = false;
+
+  // Typewrite text
+  typewriteText(text, () => {
+    // Show choices after text
+    setTimeout(() => {
+      renderChoices(choices);
+      canClick = true;
+    }, 200);
+  });
+
+  // Update progress dots
+  updateDots(nodeHistory.length);
+}
+
+function typewriteText(html, onDone) {
+  const el = document.getElementById('npText');
+  el.innerHTML = '';
+
+  if (typewriterTimer) clearTimeout(typewriterTimer);
+
+  // For typewriter effect, we'll reveal HTML by stripping tags
+  // and re-building — simpler: just fade in blocks
+  el.style.opacity = '0';
+  el.innerHTML = html + '<span class="cursor-blink"></span>';
+
+  setTimeout(() => {
+    el.style.transition = 'opacity 0.4s ease';
+    el.style.opacity = '1';
+    setTimeout(() => {
+      // Remove cursor when done
+      const cursor = el.querySelector('.cursor-blink');
+      if (cursor) cursor.remove();
+      if (onDone) onDone();
+    }, 600);
+  }, 100);
+}
+
+function renderChoices(choices) {
+  const el = document.getElementById('choices');
+  el.innerHTML = '';
+
+  choices.forEach((choice, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.style.opacity = '0';
+    btn.style.transform = 'translateY(8px)';
+    btn.style.transition = `opacity 0.3s ease ${i * 0.1}s, transform 0.3s ease ${i * 0.1}s`;
+
+    if (choice.redacted) {
+      btn.classList.add('redacted-choice');
+      btn.setAttribute('data-redacted', choice.label);
+    } else {
+      btn.innerHTML = `<span class="choice-prefix">${choice.prefix || 'RESPONSE'}</span>${choice.label}`;
+    }
+
+    btn.addEventListener('click', () => {
+      if (!canClick) return;
+      canClick = false;
+      pathChoices.push(choice.next);
+
+      // Glitch effect on NP speech
+      document.getElementById('npSpeech').classList.add('glitch');
+      setTimeout(() => {
+        document.getElementById('npSpeech').classList.remove('glitch');
+        showScene(choice.next);
+      }, 350);
+    });
+
+    el.appendChild(btn);
+
+    // Animate in
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        btn.style.opacity = '1';
+        btn.style.transform = 'translateY(0)';
+      }, 50 + i * 80);
+    });
+  });
+}
+
+function updateDots(count) {
+  const el = document.getElementById('progressDots');
+  const total = 5;
+  el.innerHTML = '';
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'pdot';
+    if (i < count - 1) dot.classList.add('done');
+    else if (i === count - 1) dot.classList.add('active');
+    el.appendChild(dot);
+  }
+}
+
+// ============================================================
+// END SCREEN
+// ============================================================
+function showEndScreen() {
+  const idx = Math.min(loopCount, loopReveals.length - 1);
+  document.getElementById('loopRevealText').textContent = loopReveals[idx];
+  document.getElementById('endScreen').classList.add('show');
+}
+
+// ============================================================
+// RESTART
+// ============================================================
+function restartGame() {
+  loopCount++;
+  currentNode = 'start';
+  nodeHistory = [];
+  pathChoices = [];
+
+  document.getElementById('endScreen').classList.remove('show');
+
+  // Update cycle display
+  const cycleNum = String(loopCount + 1).padStart(2, '0');
+  document.getElementById('loopDisplay').textContent = `CYCLE: ${cycleNum}`;
+  document.getElementById('npSubtitle').textContent = `SUBJECT PROCESSING — CYCLE ${cycleNum}`;
+
+  // Glitch the title on higher loops
+  if (loopCount >= 2) {
+    const title = document.getElementById('npTitle');
+    title.classList.add('glitch');
+    setTimeout(() => title.classList.remove('glitch'), 400);
+  }
+
+  // Generate new session ID
+  document.getElementById('sessionId').textContent = 'SESSION: ' + Math.random().toString(36).substring(2,6).toUpperCase() + '-' + Math.random().toString(36).substring(2,6).toUpperCase();
+
+  showScene('start');
+}
+
+// ============================================================
+// BOOT SEQUENCE
+// ============================================================
+function runBoot() {
+  const lines = document.querySelectorAll('.boot-line');
+  let delay = 0;
+
+  lines.forEach((line, i) => {
+    delay += i === 0 ? 200 : 300 + Math.random() * 100;
+    setTimeout(() => line.classList.add('show'), delay);
+  });
+
+  setTimeout(() => {
+    document.getElementById('bootScreen').classList.add('fade-out');
+    setTimeout(() => {
+      document.getElementById('bootScreen').style.display = 'none';
+      document.getElementById('game').classList.add('visible');
+      showScene('start');
+    }, 800);
+  }, delay + 800);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('load', runBoot);
+</script>
+</body>
+</html>
