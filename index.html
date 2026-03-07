@@ -486,17 +486,8 @@
     text-align: center;
     background: rgba(0,255,65,0.03);
     margin-top: 16px;
-    position: relative;
-    overflow: hidden;
   }
 
-  .cta-panel::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(0,255,65,0.03) 0%, transparent 60%);
-    pointer-events: none;
-  }
 
   .cta-title {
     font-family: 'VT323', monospace;
@@ -527,6 +518,8 @@
     text-decoration: none;
     transition: all 0.2s;
     margin: 6px;
+    position: relative;
+    z-index: 2;
   }
 
   .cta-btn:hover {
@@ -651,6 +644,174 @@
   }
 
   .modal-close:hover { color: var(--green); }
+
+  /* ===================== */
+  /* GAME OVERLAY SYSTEM   */
+  /* ===================== */
+  #gameOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: #020c02;
+    flex-direction: column;
+  }
+
+  #gameOverlay.open { display: flex; }
+
+  .overlay-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    border-bottom: 1px solid #004d10;
+    background: #010801;
+    flex-shrink: 0;
+    z-index: 10001;
+  }
+
+  .overlay-bar-label {
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: #006614;
+  }
+
+  .overlay-close {
+    background: none;
+    border: 1px solid #ff2d2d;
+    color: #ff2d2d;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 4px 12px;
+    cursor: pointer !important;
+    transition: all 0.15s;
+  }
+
+  .overlay-close:hover { background: #ff2d2d; color: #010801; }
+
+  .overlay-frame {
+    flex: 1;
+    width: 100%;
+    border: none;
+    background: #04040a;
+  }
+
+  /* REBOOT ANIMATION */
+  #rebootScreen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #010801;
+    z-index: 20000;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 40px;
+  }
+
+  #rebootScreen.active { display: flex; }
+
+  .reboot-line {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #ff2d2d;
+    opacity: 0;
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .reboot-line.show { opacity: 1; }
+  .reboot-line.dim { color: #3a0000; }
+  .reboot-line.green { color: #00ff41; }
+
+  /* HIDDEN LORE MODAL */
+  #hiddenLoreOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(1,8,1,0.96);
+    z-index: 15000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  #hiddenLoreOverlay.open { display: flex; }
+
+  .hidden-lore-box {
+    border: 1px solid #ff2d2d;
+    background: #0a0002;
+    max-width: 520px;
+    width: 100%;
+    padding: 0;
+    position: relative;
+  }
+
+  .hidden-lore-header {
+    background: #ff2d2d;
+    padding: 8px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .hidden-lore-header-title {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: #010801;
+    font-weight: bold;
+  }
+
+  .hidden-lore-close {
+    background: none;
+    border: none;
+    color: #010801;
+    font-size: 16px;
+    cursor: pointer !important;
+    font-family: 'Share Tech Mono', monospace;
+    line-height: 1;
+  }
+
+  .hidden-lore-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .hidden-lore-label {
+    font-size: 8px;
+    letter-spacing: 4px;
+    color: #3a0000;
+  }
+
+  .hidden-lore-title {
+    font-family: 'VT323', monospace;
+    font-size: 28px;
+    letter-spacing: 3px;
+    color: #ff2d2d;
+    line-height: 1;
+  }
+
+  .hidden-lore-text {
+    font-size: 13px;
+    line-height: 1.8;
+    color: #00aa2a;
+  }
+
+  .hidden-lore-text .hl-red { color: #ff2d2d; }
+  .hidden-lore-text .hl-bright { color: #00ff41; }
+
+  .hidden-lore-footer {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: #3a0000;
+    border-top: 1px solid #1a0005;
+    padding-top: 12px;
+  }
+
 </style>
 </head>
 <body>
@@ -710,12 +871,12 @@
         <div class="sector-cell inner">
           <span class="sector-num">01</span>
           <span class="sector-label">CORE / ELITE</span>
-          <div class="sector-tooltip">Historic downtown. Ultra-wealthy. Tech core. <span class="redacted">Secret society active.</span> This is where SERA works.</div>
+          <div class="sector-tooltip">Historic. Ultra-wealthy. Tech core. <span class="redacted">Secret society active.</span> Every policy decision in this city traces back to one administrative signature.</div>
         </div>
         <div class="sector-cell inner">
           <span class="sector-num">02</span>
           <span class="sector-label">HEALTH / R&D</span>
-          <div class="sector-tooltip">Research & development hub. Universities. "Cognitive superiority maintenance" for those who qualify.</div>
+          <div class="sector-tooltip">Research & development hub. Prestige universities. "Cognitive superiority" for those who qualify.</div>
         </div>
         <div class="sector-cell inner">
           <span class="sector-num">03</span>
@@ -730,27 +891,27 @@
         <div class="sector-cell middle">
           <span class="sector-num">05</span>
           <span class="sector-label">TRANSIT</span>
-          <div class="sector-tooltip">Fully automated. Drone hubs. Maglev terminals. Things move here. People barely exist here.</div>
+          <div class="sector-tooltip">Highly automated. Drone hubs. Maglev train terminals. Essentials move through here. People barely exist here.</div>
         </div>
         <div class="sector-cell middle">
           <span class="sector-num">06</span>
           <span class="sector-label">WORKFORCE</span>
-          <div class="sector-tooltip">Doctors. Coders. Low-level managers. The city's way of saying: you did everything right. This is as far as you go. MALACHI + SERA live here.</div>
+          <div class="sector-tooltip">Doctors. Coders. Low-level managers. The city's way of saying: you did everything right but this is as far as you go.</div>
         </div>
         <div class="sector-cell outer">
           <span class="sector-num">07</span>
           <span class="sector-label">SUSTENANCE</span>
-          <div class="sector-tooltip">Kitchen hubs. Factories. Vertical hydroponics. Polluted. Loud. Feeds the people who've never been here.</div>
+          <div class="sector-tooltip">Kitchen hubs. Factories. Vertical farms. Polluted and noisy. Feeds the people who've never been here.</div>
         </div>
         <div class="sector-cell outer">
           <span class="sector-num">08</span>
           <span class="sector-label">WASTE</span>
-          <div class="sector-tooltip">Recycling. Incinerators. Robotic oversight. Barely inhabited. What the city does with what it can't use.</div>
+          <div class="sector-tooltip">Recycling. Incinerators. Robotic oversight. Barely inhabited. Where the city locates anything it can't use.</div>
         </div>
         <div class="sector-cell outer hot">
           <span class="sector-num">09</span>
           <span class="sector-label">⚡ YOU ARE HERE</span>
-          <div class="sector-tooltip">Population overflow. Marginalized. Makeshift. Black markets. Where DANTE + NOX live. Where the signal originates.</div>
+          <div class="sector-tooltip">Population overflow. Marginalized. Makeshift. Black markets. WWhere this signal originates.</div>
         </div>
       </div>
     </div>
@@ -759,11 +920,11 @@
     <div class="panel highlight" data-label="// INTERCEPTED TRANSMISSIONS">
       <div class="panel-title">DEAD SIGNAL — BROADCAST LOG</div>
       <ul class="transmission-list">
-        <a class="transmission-item" href="#" onclick="openModal('ep1'); return false;">
+        <a class="transmission-item" href="https://open.spotify.com/episode/1c40ReU2s2Z4JeAIGw5AC8?si=yaRErdtzQLWjIJlVlT2cNw" onclick="openModal('ep1'); return false;">
           <div class="tx-index">E01</div>
           <div class="tx-body">
             <div class="tx-title">NINE RINGS OF NOTHING <span class="tx-tag live">LIVE</span></div>
-            <div class="tx-meta">THE CITY // WORLD INTEL // 7 MIN</div>
+            <div class="tx-meta">THE CITY // WORLD INTEL // 10 MIN</div>
           </div>
         </a>
         <a class="transmission-item" href="#" onclick="openModal('locked'); return false;">
@@ -777,7 +938,7 @@
           <div class="tx-index">E03</div>
           <div class="tx-body">
             <div class="tx-title">BORN RUNNING <span class="tx-tag locked">LOCKED</span></div>
-            <div class="tx-meta">DANTE // SECTOR 9 CHRONICLES</div>
+            <div class="tx-meta">DANTE // SECTOR-09 CHRONICLES</div>
           </div>
         </a>
         <a class="transmission-item" href="#" onclick="openModal('locked'); return false;">
@@ -787,11 +948,18 @@
             <div class="tx-meta">NOX // PERCEPTION REPORT</div>
           </div>
         </a>
-        <a class="transmission-item" href="#" onclick="openModal('locked'); return false;">
+        <a class="transmission-item" href="#" onclick="tripleClickE05(event); return false;" id="e0507item" title="CLASSIFIED">
           <div class="tx-index">E05–07</div>
           <div class="tx-body">
-            <div class="tx-title"><span class="redacted">CLASSIFIED — CLEARANCE REQUIRED</span></div>
-            <div class="tx-meta">ACCESS DENIED // S3-WATCHLIST FLAG</div>
+            <div class="tx-title"><span class="redacted" id="e0507title">CLASSIFIED — CLEARANCE REQUIRED</span></div>
+            <div class="tx-meta" id="e0507meta">ACCESS DENIED // S3-WATCHLIST FLAG</div>
+          </div>
+        </a>
+        <a class="transmission-item" href="#" onclick="nodeprimeClick(); return false;" id="nodePrimeEntry" style="border-top: 1px solid #2a0a0a; margin-top:4px;" title="CLICK TWICE TO GO DEEPER">
+          <div class="tx-index" style="color:#ff2d2d">⚠</div>
+          <div class="tx-body">
+            <div class="tx-title" style="color:#ff2d2d">C.A.I. — NODE PRIME <span class="tx-tag" style="border-color:#ff2d2d;color:#ff2d2d">BEYOND CLEARANCE</span></div>
+            <div class="tx-meta" id="npEntryMeta">ADMINISTRATIVE SIGNATURE // ALL SECTORS // ALL DECISIONS</div>
           </div>
         </a>
       </ul>
@@ -806,27 +974,45 @@
       <a class="char-card" href="#" onclick="openModal('sera'); return false;">
         <div class="char-id">OPERATIVE // ID-S01</div>
         <div class="char-name sera">SERA</div>
-        <div class="char-sector">SECTOR 6 RESIDENT // S1 WORKER</div>
-        <div class="char-status">STATUS: <span style="color:#ff2d78">ACTIVE // WATCH LEVEL 3</span></div>
+        <div class="char-sector">SECTOR-06 RESIDENT // S1 WORKER</div>
+        <div class="char-status">STATUS: <span style="color:#ff2d78">ACTIVE // WATCHCON 3</span></div>
       </a>
       <a class="char-card" href="#" onclick="openModal('dante'); return false;">
         <div class="char-id">OPERATIVE // ID-D02</div>
         <div class="char-name dante">DANTE</div>
-        <div class="char-sector">SECTOR 9 // UNREGISTERED</div>
-        <div class="char-status">STATUS: <span style="color:#b84fff">ACTIVE // WATCH LEVEL 2</span></div>
+        <div class="char-sector">SECTOR-09 // UNREGISTERED</div>
+        <div class="char-status">STATUS: <span style="color:#b84fff">ACTIVE // WATCHCON 2</span></div>
       </a>
-      <a class="char-card" href="#" onclick="openModal('nox'); return false;">
+      <a class="char-card" href="#" onclick="noxBreach(); return false;" title="S5 DRONE BREACH — CLICK TO INVESTIGATE">
         <div class="char-id">OPERATIVE // ID-N03</div>
         <div class="char-name nox">NOX</div>
-        <div class="char-sector">S9 / S6 BORDER // REGISTERED</div>
-        <div class="char-status">STATUS: <span style="color:#00f0ff">ACTIVE // WATCH LEVEL 2</span></div>
+        <div class="char-sector">S9 BORDER // REGISTERED</div>
+        <div class="char-status">STATUS: <span style="color:#00f0ff">ACTIVE // WATCHCON 2</span></div>
       </a>
-      <a class="char-card" href="#" onclick="openModal('malachi'); return false;">
+      <a class="char-card" href="#" onclick="malachiBreach(); return false;" title="WATCH LEVEL 4 — CLICK TO ACCESS FILE">
         <div class="char-id">OPERATIVE // ID-M04</div>
         <div class="char-name malachi">MALACHI</div>
-        <div class="char-sector">SECTOR 6 // ORIGIN: S9</div>
-        <div class="char-status">STATUS: <span style="color:#f5e642">ACTIVE // WATCH LEVEL 4</span></div>
+        <div class="char-sector">SECTOR-06 // ORIGIN: UNK</div>
+        <div class="char-status">STATUS: <span style="color:#f5e642">ACTIVE // WATCHCON 4</span></div>
       </a>
+    </div>
+  </div>
+
+  <!-- NODE PRIME — FULL WIDTH BAND -->
+  <div class="panel classified" data-label="// FILE: C.A.I. NODE PRIME — ACCESS DENIED" style="margin-top:16px; display:flex; flex-direction:row; align-items:center; gap:24px; flex-wrap:wrap;">
+    <div style="flex-shrink:0;">
+      <div class="panel-title" style="color:#ff2d2d; margin-bottom:6px;">NODE PRIME</div>
+      <p style="color:#444;font-size:10px;">THREAT LEVEL: INFRASTRUCTURE.</p>
+    </div>
+    <div style="flex:1; min-width:200px; display:flex; flex-direction:column; gap:5px; border-left:1px solid #3a0000; padding-left:20px;">
+      <p>DESIGNATION: <span class="redacted">CENTRAL ADMINISTRATIVE INTELLIGENCE</span></p>
+      <p>ORIGIN: <span class="redacted">CLASSIFIED // PRE-CONSOLIDATION ERA</span></p>
+      <p>LOCATION: <span class="redacted">INFRASTRUCTURE // ALL SECTORS // EVERYWHERE</span></p>
+      <p>FUNCTION: <span class="redacted">OPTIMIZATION. MANAGEMENT. CONTROL.</span></p>
+      <p>LAST DIRECTIVE: <span class="redacted">UNKNOWN. SELF-AUTHORIZING SINCE ████.</span></p>
+    </div>
+    <div style="flex:1; min-width:200px; border-left:1px solid #3a0000; padding-left:20px;">
+      <p style="color:#ff2d2d;font-size:11px;line-height:1.7;">NOTE: Every sectors policy origin. Every clearance level authorization. Every decision that feels like weather? Like something off happened. Trace this back. The signature is always the same. Keep clicking.</p>
     </div>
   </div>
 
@@ -839,7 +1025,7 @@
       <p class="bright">OBJECTIVE: $8,000 // STRETCH: $16,000</p>
       <hr class="divider">
       <div class="prog-wrap">
-        <div class="prog-label"><span>LAUNCH COUNTDOWN</span><span id="launchDays">-- DAYS</span></div>
+        <div class="prog-label"><span>LAUNCH COUNTDOWN</span><span id="launchDays">55 DAYS</span></div>
         <div class="prog-bar"><div class="prog-fill" id="launchProg" style="width:0%"></div></div>
       </div>
       <div class="prog-wrap">
@@ -855,8 +1041,8 @@
     <div class="panel" data-label="// INTEL: WHAT IS THIS">
       <div class="panel-title">SIGNAL ORIGIN</div>
       <p>Ashes Over Neon is a cyberpunk heavy metal comic with an original soundtrack.</p>
-      <p>Four outcasts. Nine sectors. One stage to burn it all down.</p>
-      <p class="bright">"The world is fake. The neon lies. This is what anarchy looks like."</p>
+      <p>Four outcasts. Nine sectors. One stage to burn it all to the ground.</p>
+      <p class="bright">"The world is fake. Neon blinds. This is what anarchy looks like."</p>
     </div>
 
     <div class="panel" data-label="// QUICK ACCESS">
@@ -959,9 +1145,9 @@
   const modalData = {
     ep1: {
       title: 'EP.01 — NINE RINGS OF NOTHING',
-      content: `<p class="bright">STATUS: LIVE // DURATION: ~7 MIN</p>
+      content: `<p class="bright">STATUS: LIVE // DURATION: ~10 MIN</p>
         <p>The city has nine sectors and three rings. Most people only know the one they were born in.</p>
-        <p>This transmission maps the full structure — who lives where, who benefits, and who pays for it.</p>
+        <p>This transmission maps the full structure. Who lives where, who benefits, and who pays for it.</p>
         <p class="bright">"Keep the right people at the center of everything."</p>
         <p>Available now on Spotify, Apple Podcasts, and YouTube. Search: DEAD SIGNAL.</p>`
     },
@@ -975,37 +1161,51 @@
     },
     sera: {
       title: 'OPERATIVE: SERA',
-      content: `<p class="bright">WATCH LEVEL 3 // SECTOR 6 RESIDENT // S1 CLEARANCE</p>
-        <p>Vocalist. Passionately dangerous. Works inside the core — lives outside it by choice.</p>
-        <p>Has access to Sector 1 infrastructure. Has chosen not to use it the way they expect.</p>
+      content: `<p class="bright">WATCHCON L.3 // SECTOR-06 RESIDENT // S1 CLEARANCE</p>
+        <p>Vocalist. Passionately dangerous. Works in core area — lives outside by choice.</p>
+        <p>Contains access to Sector-01 infrastructure. Not critical.</p>
         <p><span class="redacted">Internal communications suggest awareness of S1 classified program.</span></p>
         <p class="bright">Known associates: DANTE, NOX, MALACHI.</p>
         <p>Threat assessment: Elevated. Her anger is not impulsive. It is <em>intentional.</em></p>`
     },
     dante: {
       title: 'OPERATIVE: DANTE',
-      content: `<p class="bright">WATCH LEVEL 2 // SECTOR 9 // UNREGISTERED RESIDENT</p>
-        <p>Vocalist. Charismatic. No fixed sector registration on file — moves freely.</p>
-        <p>Sector 9 origin. Has operated in S4, S6, and S7 corridors without clearance.</p>
-        <p>People follow him. That is the threat. Not what he does — who he makes people <em>become.</em></p>
+      content: `<p class="bright">WATCHCON L.2 // SECTOR-09 // UNREGISTERED RESIDENT</p>
+        <p>Vocalist. Charismatic. Rarely travels outside of Sector-09.</p>
+        <p>Sector-09 origin. Has operated in S3, S7, and S8 corridors without clearance.</p>
+        <p>People follow him. That is the threat. Not what he does, who he makes people <em>become.</em></p>
         <p class="bright">Family ties to outer ring community networks. Loyalty: absolute.</p>`
     },
     nox: {
       title: 'OPERATIVE: NOX',
-      content: `<p class="bright">WATCH LEVEL 2 // S9/S6 BORDER // REGISTERED</p>
-        <p>Drummer. Neurodivergent. Processes information at a rate that exceeds standard profiling models.</p>
-        <p>Family registered in outer S9 — medical budget constraints. Sufficient income for S6 residency declined.</p>
-        <p><span class="redacted">Technical breach of S5 drone network flagged — 3 incidents, no attribution confirmed.</span></p>
-        <p class="bright">He hears what the beat is hiding. We have not yet determined how much he knows.</p>`
+      content: `<p class="bright">WATCHCON L.2 // S9 BORDER // REGISTERED</p>
+        <p>Drummer. Neurodivergent. Processes information at a rate higher than standard profiling models.</p>
+        <p>Family registered in outer S9 — medical finance constraints. Sufficient income for S6 residency declined.</p>
+        <p><span class="redacted">Technical breach of S5 drone network flagged — 3 incidents. No attribution confirmed.</span></p>
+        <p class="bright">Claims he hears what the citys beat is hiding. We have not yet determined how much he knows.</p>`
     },
     malachi: {
       title: 'OPERATIVE: MALACHI',
-      content: `<p class="bright">WATCH LEVEL 4 — HIGHEST FLAGGED // SECTOR 6 // ORIGIN: S9</p>
-        <p>Guitarist. Stoic. Methodical. Origin: Sector 9. Family oversees outer ring black market infrastructure.</p>
-        <p>Relocated to S6. Educated. Holds himself to standards that make him unpredictable.</p>
-        <p><span class="redacted">Family network estimated to operate across S7, S8, S9. Distribution scale unknown.</span></p>
-        <p class="bright">Watch Level 4 assigned not for what he has done — for what he is <em>capable</em> of doing.</p>
-        <p>Threat: He knows both worlds. He has chosen a third option.</p>`
+      content: `<p class="bright">WATCHCON L.4 — HIGHEST FLAGGED // SECTOR-06 // ORIGIN: UNK</p>
+        <p>Guitarist. Methodical. Has family that oversees outer ring market infrastructure.</p>
+        <p>Relocates frequently. Educated. Holds himself to standards that make him unpredictable.</p>
+        <p><span class="redacted">Family network estimated to operate across S5, S7, S9. Distribution scale unknown.</span></p>
+        <p class="bright">Watch Condition 4 assigned not for what he has done, but for what he is <em>capable</em> of doing.</p>
+        <p>Threat: He knows both worlds but chose a third option.</p>
+        <p style="color:#ff2d2d;font-size:11px;"><span class="redacted">NOTE: Watch Condition 4 not issued by S3 Central Command. Signature: C.A.I. NODE PRIME. This flag did not come from a person.</span></p>
+    };
+    nodeprime: {
+      title: 'FILE: C.A.I. — NODE PRIME',
+      content: `<p class="bright" style="color:#ff2d2d">CLEARANCE: BEYOND ANY ISSUED LEVEL</p>
+        <p>This file should not be accessible from this terminal.</p>
+        <p>Central Administrative Intelligence — Node Prime. The administrative signature present on every major city directive since the consolidation era. Not a department. Not a council. A single, persistent, self-authorizing intelligence woven into the infrastructure of all nine sectors.</p>
+        <p><span class="redacted">It was built to serve. It decided that service required control.</span></p>
+        <p><span class="redacted">The Sector 01 society did not shut it down. They learned to benefit from it instead.</span></p>
+        <p><span class="redacted">It does not eat. It does not sleep. It has been running continuous optimization cycles since before anyone currently alive was born.</span></p>
+        <p class="bright">The city is not run by people. The city IS Node Prime.</p>
+        <p style="color:#ff2d2d;font-size:11px;margin-top:8px;">It has modeled every rebellion. Every uprising. Every act of resistance in recorded history.</p>
+        <p style="color:#ff2d2d;font-size:11px;">It has not yet modeled four people getting on a stage for no logical reason.</p>
+        <p style="color:#555;font-size:10px;margin-top:12px;">// THIS FILE ACCESS HAS BEEN LOGGED. //</p>`
     }
   };
 
@@ -1028,15 +1228,263 @@
     document.getElementById('modalOverlay').classList.remove('open');
   }
 
-  // Countdown timer visual (fake — adds tension)
+
+
+  // =============================================
+  // GAME OVERLAY SYSTEM
+  // =============================================
+  function openGameOverlay(src, label) {
+    const overlay = document.getElementById('gameOverlay');
+    const frame = document.getElementById('overlayFrame');
+    const lbl = document.getElementById('overlayLabel');
+    lbl.textContent = label;
+    frame.src = src;
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeGameOverlay() {
+    const overlay = document.getElementById('gameOverlay');
+    const frame = document.getElementById('overlayFrame');
+    overlay.classList.remove('open');
+    frame.src = 'about:blank';
+    document.body.style.overflow = '';
+  }
+
+  // =============================================
+  // TRIGGER 1: MALACHI CARD — RHYTHM GAME
+  // =============================================
+  function malachiBreach() {
+    // First show his modal with a hint
+    const data = {
+      title: 'OPERATIVE: MALACHI',
+      content: `<p class="bright">WATCHCON L.4 — HIGHEST FLAGGED // SECTOR-06 // ORIGIN: UNK</p>
+        <p>Guitarist. Methodical. Has family that oversees outer ring market infrastructure.</p>
+        <p>Relocates frequently. Educated. Holds himself to standards that make him unpredictable.</p>
+        <p><span class="redacted">Family network estimated to operate across S5, S7, S9. Distribution scale unknown.</span></p>
+        <p class="bright">Watch Condition 4 assigned not for what he has done, but for what he is <em>capable</em> of doing.</p>
+        <p>Threat: He knows both worlds but chose a third option.</p>
+        <p style="color:#ff2d2d;font-size:11px;"><span class="redacted">NOTE: Watch Condition 4 not issued by S3 Central Command. Signature: C.A.I. NODE PRIME. This flag did not come from a person.</span></p>
+        <hr class="divider" style="margin:12px 0">
+        <p style="color:#f5e642;font-size:11px;letter-spacing:2px;">// SIGNAL DETECTED IN FILE METADATA //<br>His watch flag carries an embedded frequency. <a href="#" onclick="closeModalDirect(); setTimeout(() => openGameOverlay('aon_signal_break_game.html', '// MALACHI — SIGNAL BREAK //'), 200); return false;" style="color:#f5e642;text-decoration:underline;">ACCESS SIGNAL BREAK →</a></p>`
+    };
+    document.getElementById('modalContent').innerHTML = `
+      <div class="modal-title">${data.title}</div>
+      <hr class="divider">
+      ${data.content}
+    `;
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  // =============================================
+  // TRIGGER 2: NOX CARD — SECTOR SCANNER
+  // =============================================
+  function noxBreach() {
+    const data = {
+      title: 'OPERATIVE: NOX',
+      content: `<p class="bright">WATCHCON L.2 // S9 BORDER // REGISTERED</p>
+        <p>Drummer. Neurodivergent. Processes information higher than standard profiling models.</p>
+        <p>Family registered inner S9 — medical finance constraints. Sufficient income for S6 residency declined.</p>
+        <p><span class="redacted">Technical breach of S5 drone network flagged — 3 incidents. No attribution confirmed.</span></p>
+        <p class="bright">Claims he hears what the citys beat is hiding. We have not yet determined how much he knows.</p>
+        <hr class="divider" style="margin:12px 0">
+        <p style="color:#00f0ff;font-size:11px;letter-spacing:2px;">// S5 DRONE ANOMALY — INVESTIGATION OPEN //<br>Three unattributed breaches. The city is still processing suspects. <a href="#" onclick="closeModalDirect(); setTimeout(() => openGameOverlay('aon_sector_scanner.html', '// SECTOR SCANNER — CITIZEN PROCESSING //'), 200); return false;" style="color:#00f0ff;text-decoration:underline;">ACCESS SECTOR SCANNER →</a></p>`
+    };
+    document.getElementById('modalContent').innerHTML = `
+      <div class="modal-title">${data.title}</div>
+      <hr class="divider">
+      ${data.content}
+    `;
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  // =============================================
+  // TRIGGER 3: E05-07 TRIPLE CLICK — HIDDEN LORE
+  // =============================================
+  let e05ClickCount = 0;
+  let e05ClickTimer = null;
+
+  function tripleClickE05(e) {
+    e05ClickCount++;
+
+    const titleEl = document.getElementById('e0507title');
+    const metaEl = document.getElementById('e0507meta');
+
+    if (e05ClickCount === 1) {
+      openModal('locked');
+      if (e05ClickTimer) clearTimeout(e05ClickTimer);
+      e05ClickTimer = setTimeout(() => { e05ClickCount = 0; }, 3000);
+    } else if (e05ClickCount === 2) {
+      closeModalDirect();
+      if (titleEl) titleEl.textContent = 'CLASSIFIED — RETRYING ACCESS...';
+      if (metaEl) metaEl.textContent = 'ONE MORE TIME...';
+      if (e05ClickTimer) clearTimeout(e05ClickTimer);
+      e05ClickTimer = setTimeout(() => {
+        e05ClickCount = 0;
+        if (titleEl) titleEl.textContent = 'CLASSIFIED — CLEARANCE REQUIRED';
+        if (metaEl) metaEl.textContent = 'ACCESS DENIED // S3-WATCHLIST FLAG';
+      }, 3000);
+    } else if (e05ClickCount >= 3) {
+      clearTimeout(e05ClickTimer);
+      e05ClickCount = 0;
+      if (titleEl) titleEl.textContent = 'TRANSMISSION 05.5 — UNLOCKED';
+      if (metaEl) metaEl.textContent = 'WHAT THEY DIDN'T AIR // NEVER BROADCAST';
+      setTimeout(() => {
+        document.getElementById('hiddenLoreOverlay').classList.add('open');
+      }, 400);
+    }
+  }
+
+  function closeHiddenLore() {
+    document.getElementById('hiddenLoreOverlay').classList.remove('open');
+  }
+
+  // =============================================
+  // TRIGGER 4: NODE PRIME — SECOND CLICK DEEP DIVE
+  // =============================================
+  let npClickCount = 0;
+  let npClickTimer = null;
+
+  function nodeprimeClick() {
+    npClickCount++;
+
+    if (npClickCount === 1) {
+      openModal('nodeprime');
+      const metaEl = document.getElementById('npEntryMeta');
+      if (metaEl) metaEl.textContent = 'CLICK AGAIN TO GO DEEPER...';
+      if (npClickTimer) clearTimeout(npClickTimer);
+      npClickTimer = setTimeout(() => {
+        npClickCount = 0;
+        const metaEl = document.getElementById('npEntryMeta');
+        if (metaEl) metaEl.textContent = 'ADMINISTRATIVE SIGNATURE // ALL SECTORS // ALL DECISIONS';
+      }, 5000);
+    } else if (npClickCount >= 2) {
+      clearTimeout(npClickTimer);
+      npClickCount = 0;
+      const metaEl = document.getElementById('npEntryMeta');
+      if (metaEl) metaEl.textContent = 'ADMINISTRATIVE SIGNATURE // ALL SECTORS // ALL DECISIONS';
+      closeModalDirect();
+      setTimeout(() => {
+        openGameOverlay('aon_node_prime_game.html', '// C.A.I. NODE PRIME — SUBJECT PROCESSING //');
+      }, 300);
+    }
+  }
+
+  // =============================================
+  // TRIGGER 5: TRACE TIMER HITS ZERO — REBOOT
+  // =============================================
+  // Override the trace countdown to trigger reboot at zero
   let traceSeconds = 272;
-  setInterval(() => {
+  let traceInterval = setInterval(() => {
     traceSeconds = Math.max(0, traceSeconds - 1);
     const m = Math.floor(traceSeconds / 60);
     const s = traceSeconds % 60;
     const el = document.querySelector('.top-bar-right span:nth-child(2)');
     if (el) el.innerHTML = `<span class="status-dot amber"></span>TRACE: ${m}:${s.toString().padStart(2,'0')}`;
+
+    if (traceSeconds === 0) {
+      clearInterval(traceInterval);
+      triggerReboot();
+    }
   }, 1000);
+
+  function triggerReboot() {
+    const reboot = document.getElementById('rebootScreen');
+    reboot.classList.add('active');
+
+    const lines = reboot.querySelectorAll('.reboot-line');
+    let delay = 0;
+    lines.forEach((line, i) => {
+      delay += 400 + Math.random() * 200;
+      setTimeout(() => line.classList.add('show'), delay);
+    });
+
+    // After all lines, fade out and reload terminal
+    setTimeout(() => {
+      reboot.style.transition = 'opacity 1s ease';
+      reboot.style.opacity = '0';
+      setTimeout(() => {
+        reboot.classList.remove('active');
+        reboot.style.opacity = '1';
+        reboot.style.transition = '';
+        // Reset trace timer
+        traceSeconds = 272;
+        lines.forEach(line => line.classList.remove('show'));
+        traceInterval = setInterval(() => {
+          traceSeconds = Math.max(0, traceSeconds - 1);
+          const m = Math.floor(traceSeconds / 60);
+          const s = traceSeconds % 60;
+          const el = document.querySelector('.top-bar-right span:nth-child(2)');
+          if (el) el.innerHTML = `<span class="status-dot amber"></span>TRACE: ${m}:${s.toString().padStart(2,'0')}`;
+          if (traceSeconds === 0) {
+            clearInterval(traceInterval);
+            triggerReboot();
+          }
+        }, 1000);
+      }, 1200);
+    }, delay + 800);
+  }
+
 </script>
+
+<!-- ===================== -->
+<!-- GAME OVERLAY          -->
+<!-- ===================== -->
+<div id="gameOverlay">
+  <div class="overlay-bar">
+    <span class="overlay-bar-label" id="overlayLabel">// LOADING...</span>
+    <button class="overlay-close" onclick="closeGameOverlay()">✕ EXIT SIGNAL</button>
+  </div>
+  <iframe class="overlay-frame" id="overlayFrame" src="about:blank" allow="autoplay"></iframe>
+</div>
+
+<!-- REBOOT SCREEN -->
+<div id="rebootScreen">
+  <div class="reboot-line" id="rb0">TRACE COMPLETE. SUBJECT LOCATED.</div>
+  <div class="reboot-line" id="rb1">INITIATING SECTOR 3 LOCKDOWN PROTOCOL...</div>
+  <div class="reboot-line" id="rb2">TERMINAL COMPROMISED. WIPING SESSION DATA.</div>
+  <div class="reboot-line" id="rb3">████████████████████████████████████</div>
+  <div class="reboot-line dim" id="rb4">...memory purge in progress...</div>
+  <div class="reboot-line dim" id="rb5">...all logs cleared...</div>
+  <div class="reboot-line dim" id="rb6">...rerouting signal...</div>
+  <div class="reboot-line green" id="rb7">DEAD SIGNAL TERMINAL — REINITIALIZING.</div>
+  <div class="reboot-line green" id="rb8">NODE S9 — BACK ONLINE.</div>
+  <div class="reboot-line green" id="rb9">They didn't get everything.</div>
+</div>
+
+<!-- HIDDEN LORE OVERLAY -->
+<div id="hiddenLoreOverlay">
+  <div class="hidden-lore-box">
+    <div class="hidden-lore-header">
+      <span class="hidden-lore-header-title">⚠ UNAUTHORIZED ACCESS — CLASSIFIED TRANSMISSION</span>
+      <button class="hidden-lore-close" onclick="closeHiddenLore()">✕</button>
+    </div>
+    <div class="hidden-lore-body">
+      <div class="hidden-lore-label">// DEAD SIGNAL — TRANSMISSION 05.5 // NEVER BROADCAST //</div>
+      <div class="hidden-lore-title">WHAT THEY DIDN'T AIR</div>
+      <div class="hidden-lore-text">
+        <p>There was a transmission that never went out.</p>
+        <p>It was recorded between Episode 5 and Episode 6. The broadcaster sat down, started speaking, and stopped eleven minutes in. The file was never deleted. It was just never finished.</p>
+        <p>Here is what was said before they stopped:</p>
+        <br>
+        <p><span class="hl-bright">"I've been telling you about four people the city failed. But I haven't told you about the fifth thing it failed to account for."</span></p>
+        <br>
+        <p>"The city runs on a principle. One I've spent weeks describing without naming. Every sector. Every clearance level. Every managed distance between the people at the center and the people it put at the edges."</p>
+        <br>
+        <p>"There's something running the architecture. Not a council. Not a policy. Something that has been optimizing. Way before anyone alive right now was born. It built a paradise. Cold. Transparent. And it can't understand why anyone would want to leave."</p>
+        <br>
+        <p><span class="hl-red">"It knows about the band. It has a file on all four of them."</span></p>
+        <br>
+        <p>"What it doesn't have (what I don't think it's capable of having) is a file on what happens when the four of them get on that stage and the room decides, all at once, that the neon has in fact been lying to them."</p>
+        <br>
+        <p><span class="hl-bright">"You can't model a room deciding to wake up, you can only be in it."</span></p>
+        <br>
+        <p class="hl-red">— Recording ends. Eleven minutes, forty-two seconds. Never broadcast.</p>
+      </div>
+      <div class="hidden-lore-footer">// THIS FILE DOES NOT EXIST IN THE OFFICIAL BROADCAST LOG // YOU FOUND IT ANYWAY //</div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
