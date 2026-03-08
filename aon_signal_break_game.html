@@ -487,8 +487,8 @@
     <div class="track-item sera" onclick="selectTrack('sera')">
       <div class="track-char">SERA</div>
       <div class="track-info">
-        <div class="track-name">TRACK 01 — THE VOLUNTEER</div>
-        <div class="track-meta">VOCALIST // BASSIST // SECTOR 6</div>
+        <div class="track-name">TRACK 01 — THE9</div>
+        <div class="track-meta">SINGER // BASSIST // SECTOR-06</div>
       </div>
       <div class="track-diff">
         <div class="diff-dot active"></div>
@@ -500,24 +500,24 @@
     <div class="track-item dante locked" onclick="showLocked()">
       <div class="track-char">DANTE</div>
       <div class="track-info">
-        <div class="track-name">TRACK 02 — BORN RUNNING</div>
-        <div class="track-meta">VOCALIST // DJ // SECTOR 9</div>
+        <div class="track-name">TRACK 02 — COLLAPSE REBIRTH</div>
+        <div class="track-meta">VOCALIST // DJ // SECTOR-09</div>
       </div>
       <div class="track-lock">BACKER ONLY</div>
     </div>
     <div class="track-item nox locked" onclick="showLocked()">
       <div class="track-char">NOX</div>
       <div class="track-info">
-        <div class="track-name">TRACK 03 — STATIC MIND</div>
-        <div class="track-meta">DRUMMER // S9/S6 BORDER</div>
+        <div class="track-name">TRACK 03 — ALL THE PIECES</div>
+        <div class="track-meta">DRUMMER // S9 BORDER</div>
       </div>
       <div class="track-lock">BACKER ONLY</div>
     </div>
     <div class="track-item malachi locked" onclick="showLocked()">
       <div class="track-char">MALACHI</div>
       <div class="track-info">
-        <div class="track-name">TRACK 04 — THE WEIGHT OF 6</div>
-        <div class="track-meta">GUITARIST // SONGWRITER // SECTOR 6</div>
+        <div class="track-name">TRACK 04 — SILLHOUETTES FOR SALE</div>
+        <div class="track-meta">GUITARIST // SONGWRITER // NO ORIGIN</div>
       </div>
       <div class="track-lock">BACKER ONLY</div>
     </div>
@@ -609,7 +609,7 @@
   </div>
   <div class="result-cta-box">
     <div class="result-cta-label">// THREE MORE TRACKS WAITING //</div>
-    <div class="result-cta-text">Dante. Nox. Malachi. Each one has their own frequency. Back the campaign to unlock the full signal.</div>
+    <div class="result-cta-text">Each one have their own frequency. Back the campaign to unlock the full signal.</div>
     <a href="https://www.kickstarter.com/projects/ashesoverneon/ashes-over-neon-in-the-gutter-the-origin-story-book-0?ref=banner" class="btn btn-primary" target="_blank" style="width:100%;margin-bottom:8px;">BACK ON KICKSTARTER</a>
     <button class="btn btn-ghost btn-small" onclick="showTitle()" style="width:100%">PLAY AGAIN</button>
   </div>
@@ -632,11 +632,11 @@ const TRACKS = {
     // ↓↓↓ REPLACE THIS URL WITH YOUR ACTUAL AUDIO FILE ↓↓↓
     // Accepted formats: mp3, ogg, wav
     // Host on your own server, GitHub Pages, or a direct Bandcamp/CDN link
-    audioSrc: 'YOUR_SERA_TRACK_URL_HERE.mp3',
-    name: 'THE VOLUNTEER',
+    audioSrc: 'https://ashesoverneon.bandcamp.com/track/the-9',
+    name: 'THE9',
     char: 'SERA',
     color: '#c4184a',
-    bpm: 140, // ← CHANGE THIS TO MATCH YOUR TRACK'S BPM
+    bpm: 180, // ← CHANGE THIS TO MATCH YOUR TRACK'S BPM
     // Note chart: [time_in_seconds, lane(0-3)]
     // Lane 0=SERA(pink), 1=DANTE(purple), 2=NOX(cyan), 3=MALACHI(yellow)
     // Chart is hand-crafted to feel musical — adjust timing to match your track
@@ -769,7 +769,7 @@ function selectTrack(trackId) {
     gameState.audio = null;
   }
 
-  if (track.audioSrc && track.audioSrc !== 'YOUR_SERA_TRACK_URL_HERE.mp3') {
+  if (track.audioSrc && track.audioSrc !== 'YOUR_SERA_TRACK_URL_HERE.mp') {
     gameState.audio = new Audio(track.audioSrc);
     gameState.audio.load();
     gameState.audio.oncanplaythrough = startGame;
@@ -834,7 +834,7 @@ function quitGame() {
 // ============================================================
 // GAME LOOP
 // ============================================================
-const TRACK_DURATION = 37; // seconds — set to your track length
+const TRACK_DURATION = 123; // seconds — set to your track length
 
 function gameLoop() {
   if (!gameState.running || gameState.paused) return;
