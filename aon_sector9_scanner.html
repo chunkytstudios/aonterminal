@@ -1237,8 +1237,13 @@
     const overlay = document.getElementById('gameOverlay');
     const frame = document.getElementById('overlayFrame');
     const lbl = document.getElementById('overlayLabel');
+    const directLink = document.getElementById('overlayDirectLink');
     lbl.textContent = label;
     frame.src = src;
+    if (directLink) {
+      directLink.href = src;
+      directLink.style.display = 'inline';
+    }
     overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
@@ -1261,8 +1266,10 @@
   function closeGameOverlay() {
     const overlay = document.getElementById('gameOverlay');
     const frame = document.getElementById('overlayFrame');
+    const directLink = document.getElementById('overlayDirectLink');
     overlay.classList.remove('open');
     frame.src = 'about:blank';
+    if (directLink) directLink.style.display = 'none';
     document.body.style.overflow = '';
   }
 
@@ -1450,9 +1457,12 @@
 <div id="gameOverlay">
   <div class="overlay-bar">
     <span class="overlay-bar-label" id="overlayLabel">// LOADING...</span>
-    <button class="overlay-close" onclick="closeGameOverlay()">✕ EXIT SIGNAL</button>
+    <div style="display:flex;gap:12px;align-items:center;">
+      <a id="overlayDirectLink" href="#" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:#004d10;text-decoration:none;display:none;">OPEN DIRECT ↗</a>
+      <button class="overlay-close" onclick="closeGameOverlay()">✕ EXIT SIGNAL</button>
+    </div>
   </div>
-  <iframe class="overlay-frame" id="overlayFrame" src="about:blank" allow="autoplay"></iframe>
+  <iframe class="overlay-frame" id="overlayFrame" src="about:blank" allow="autoplay" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
 </div>
 
 <!-- REBOOT SCREEN -->
