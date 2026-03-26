@@ -37,7 +37,6 @@
     cursor: pointer !important;
   }
 
-  /* CRT monitor effect */
   body::before {
     content: '';
     position: fixed;
@@ -54,7 +53,6 @@
     z-index: 9998;
   }
 
-  /* CRT vignette */
   body::after {
     content: '';
     position: fixed;
@@ -64,7 +62,6 @@
     z-index: 9997;
   }
 
-  /* Flicker animation */
   @keyframes flicker {
     0%, 97%, 100% { opacity: 1; }
     98% { opacity: 0.85; }
@@ -79,11 +76,6 @@
   @keyframes blink {
     0%, 49% { opacity: 1; }
     50%, 100% { opacity: 0; }
-  }
-
-  @keyframes typeIn {
-    from { width: 0; }
-    to { width: 100%; }
   }
 
   @keyframes fadeIn {
@@ -117,7 +109,6 @@
     z-index: 9996;
   }
 
-  /* BOOT SCREEN */
   #bootScreen {
     position: fixed;
     inset: 0;
@@ -133,29 +124,15 @@
     transition: opacity 0.5s ease;
   }
 
-  #bootScreen.hidden {
-    opacity: 0;
-    pointer-events: none;
-  }
+  #bootScreen.hidden { opacity: 0; pointer-events: none; }
+  #bootScreen.gone { display: none; }
 
-  #bootScreen.gone {
-    display: none;
-  }
-
-  .boot-line {
-    font-size: 13px;
-    color: var(--green-dim);
-    opacity: 0;
-    width: 100%;
-    max-width: 600px;
-  }
-
+  .boot-line { font-size: 13px; color: var(--green-dim); opacity: 0; width: 100%; max-width: 600px; }
   .boot-line.bright { color: var(--green); }
   .boot-line.warn { color: var(--amber); }
   .boot-line.err { color: var(--red); }
   .boot-line.gap { height: 8px; }
 
-  /* MAIN TERMINAL */
   #terminal {
     display: block;
     min-height: 100vh;
@@ -165,7 +142,6 @@
     animation: flicker 12s ease infinite;
   }
 
-  /* TOP BAR */
   .top-bar {
     display: flex;
     justify-content: space-between;
@@ -177,18 +153,8 @@
     gap: 8px;
   }
 
-  .top-bar-left {
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 2px;
-  }
-
-  .top-bar-right {
-    display: flex;
-    gap: 16px;
-    font-size: 11px;
-    color: var(--muted);
-  }
+  .top-bar-left { font-size: 11px; color: var(--muted); letter-spacing: 2px; }
+  .top-bar-right { display: flex; gap: 16px; font-size: 11px; color: var(--muted); }
 
   .status-dot {
     display: inline-block;
@@ -201,17 +167,10 @@
     margin-right: 4px;
     vertical-align: middle;
   }
-
   .status-dot.amber { background: var(--amber); box-shadow: 0 0 6px var(--amber); animation: blink 0.8s ease infinite; }
   .status-dot.red { background: var(--red); box-shadow: 0 0 6px var(--red); animation: none; }
 
-  /* HEADER ASCII */
-  .ascii-header {
-    text-align: center;
-    margin: 20px 0 28px;
-    animation: glitch 7s ease infinite;
-  }
-
+  .ascii-header { text-align: center; margin: 20px 0 28px; animation: glitch 7s ease infinite; }
   .ascii-art {
     font-family: 'VT323', monospace;
     font-size: clamp(28px, 5vw, 48px);
@@ -221,15 +180,8 @@
     line-height: 1.1;
     animation: glitchBlock 9s ease infinite;
   }
+  .ascii-sub { font-size: 11px; color: var(--muted); letter-spacing: 4px; margin-top: 8px; }
 
-  .ascii-sub {
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 4px;
-    margin-top: 8px;
-  }
-
-  /* ALERT BANNER */
   .alert-banner {
     border: 1px solid var(--amber);
     padding: 10px 16px;
@@ -241,7 +193,6 @@
     position: relative;
     overflow: hidden;
   }
-
   .alert-banner::before {
     content: '[INTERCEPTED TRANSMISSION]';
     font-size: 10px;
@@ -251,30 +202,16 @@
     opacity: 0.6;
   }
 
-  /* GRID LAYOUT */
-  .grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 16px;
-  }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  @media (max-width: 600px) { .grid, .grid.grid-3 { grid-template-columns: 1fr; } }
 
-  .grid-3 {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-
-  @media (max-width: 600px) {
-    .grid, .grid.grid-3 { grid-template-columns: 1fr; }
-  }
-
-  /* PANELS */
   .panel {
     border: 1px solid var(--border);
     padding: 16px;
     background: rgba(0,255,65,0.015);
     position: relative;
   }
-
   .panel::before {
     content: attr(data-label);
     position: absolute;
@@ -286,7 +223,6 @@
     letter-spacing: 3px;
     color: var(--muted);
   }
-
   .panel.highlight { border-color: var(--green-dim); background: rgba(0,255,65,0.04); }
   .panel.warn { border-color: var(--amber); background: rgba(255,179,0,0.03); }
   .panel.warn::before { color: var(--amber); }
@@ -301,23 +237,10 @@
     margin-bottom: 8px;
     text-shadow: 0 0 10px rgba(0,255,65,0.4);
   }
-
-  .panel p {
-    font-size: 12px;
-    color: var(--green-dim);
-    line-height: 1.7;
-    margin-bottom: 8px;
-  }
-
+  .panel p { font-size: 12px; color: var(--green-dim); line-height: 1.7; margin-bottom: 8px; }
   .panel p.bright { color: var(--green); }
 
-  /* SECTOR MAP */
-  .sector-map {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-    margin-top: 8px;
-  }
+  .sector-map { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; }
 
   .sector-cell {
     border: 1px solid var(--border);
@@ -328,34 +251,14 @@
     transition: all 0.2s;
     position: relative;
   }
-
-  .sector-cell:hover {
-    border-color: var(--green);
-    background: rgba(0,255,65,0.08);
-    color: var(--green);
-  }
-
+  .sector-cell:hover { border-color: var(--green); background: rgba(0,255,65,0.08); color: var(--green); }
   .sector-cell.inner { border-color: #004400; color: var(--muted); }
   .sector-cell.middle { border-color: #003300; color: var(--muted); }
   .sector-cell.outer { border-color: var(--border); color: var(--green-dim); }
   .sector-cell.outer.hot { border-color: var(--green-dim); color: var(--green); }
+  .sector-num { font-family: 'VT323', monospace; font-size: 20px; display: block; line-height: 1; }
+  .sector-label { font-size: 9px; letter-spacing: 1px; display: block; margin-top: 3px; opacity: 0.7; }
 
-  .sector-num {
-    font-family: 'VT323', monospace;
-    font-size: 20px;
-    display: block;
-    line-height: 1;
-  }
-
-  .sector-label {
-    font-size: 9px;
-    letter-spacing: 1px;
-    display: block;
-    margin-top: 3px;
-    opacity: 0.7;
-  }
-
-  /* TOOLTIP */
   .sector-tooltip {
     display: none;
     position: absolute;
@@ -372,12 +275,9 @@
     line-height: 1.5;
     text-align: left;
   }
-
   .sector-cell:hover .sector-tooltip { display: block; }
 
-  /* LINKS / TRANSMISSIONS */
   .transmission-list { list-style: none; }
-
   .transmission-item {
     border-bottom: 1px solid var(--border);
     padding: 10px 0;
@@ -389,54 +289,18 @@
     text-decoration: none;
     color: inherit;
   }
-
   .transmission-item:hover { background: rgba(0,255,65,0.04); padding-left: 6px; }
   .transmission-item:last-child { border-bottom: none; }
-
-  .tx-index {
-    font-size: 10px;
-    color: var(--muted);
-    width: 30px;
-    flex-shrink: 0;
-    padding-top: 2px;
-  }
-
+  .tx-index { font-size: 10px; color: var(--muted); width: 30px; flex-shrink: 0; padding-top: 2px; }
   .tx-body { flex: 1; }
-
-  .tx-title {
-    font-size: 13px;
-    color: var(--green);
-    margin-bottom: 3px;
-    letter-spacing: 1px;
-  }
-
-  .tx-meta {
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 2px;
-  }
-
-  .tx-tag {
-    display: inline-block;
-    border: 1px solid;
-    padding: 1px 6px;
-    font-size: 9px;
-    letter-spacing: 1px;
-    margin-left: 8px;
-  }
-
+  .tx-title { font-size: 13px; color: var(--green); margin-bottom: 3px; letter-spacing: 1px; }
+  .tx-meta { font-size: 10px; color: var(--muted); letter-spacing: 2px; }
+  .tx-tag { display: inline-block; border: 1px solid; padding: 1px 6px; font-size: 9px; letter-spacing: 1px; margin-left: 8px; }
   .tx-tag.live { border-color: var(--green); color: var(--green); }
   .tx-tag.locked { border-color: var(--muted); color: var(--muted); }
   .tx-tag.new { border-color: var(--amber); color: var(--amber); }
 
-  /* CHARACTERS */
-  .char-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 8px;
-  }
-
+  .char-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
   .char-card {
     border: 1px solid var(--border);
     padding: 12px;
@@ -445,70 +309,19 @@
     text-decoration: none;
     display: block;
   }
-
   .char-card:hover { border-color: var(--green); background: rgba(0,255,65,0.05); }
-
-  .char-id {
-    font-size: 9px;
-    letter-spacing: 3px;
-    color: var(--muted);
-    margin-bottom: 4px;
-  }
-
-  .char-name {
-    font-family: 'VT323', monospace;
-    font-size: 28px;
-    letter-spacing: 3px;
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-
+  .char-id { font-size: 9px; letter-spacing: 3px; color: var(--muted); margin-bottom: 4px; }
+  .char-name { font-family: 'VT323', monospace; font-size: 28px; letter-spacing: 3px; line-height: 1; margin-bottom: 4px; }
   .char-name.sera { color: #ff2d78; text-shadow: 0 0 12px rgba(255,45,120,0.5); }
   .char-name.dante { color: #b84fff; text-shadow: 0 0 12px rgba(184,79,255,0.5); }
   .char-name.nox { color: #00f0ff; text-shadow: 0 0 12px rgba(0,240,255,0.5); }
   .char-name.malachi { color: #f5e642; text-shadow: 0 0 12px rgba(245,230,66,0.5); }
+  .char-sector { font-size: 10px; color: var(--muted); letter-spacing: 2px; }
+  .char-status { font-size: 9px; margin-top: 6px; padding: 2px 6px; border: 1px solid var(--border); display: inline-block; letter-spacing: 1px; }
 
-  .char-sector {
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 2px;
-  }
-
-  .char-status {
-    font-size: 9px;
-    margin-top: 6px;
-    padding: 2px 6px;
-    border: 1px solid var(--border);
-    display: inline-block;
-    letter-spacing: 1px;
-  }
-
-  /* CTA PANEL */
-  .cta-panel {
-    border: 1px solid var(--green);
-    padding: 24px;
-    text-align: center;
-    background: rgba(0,255,65,0.03);
-    margin-top: 16px;
-  }
-
-
-  .cta-title {
-    font-family: 'VT323', monospace;
-    font-size: 32px;
-    letter-spacing: 4px;
-    color: var(--green);
-    text-shadow: 0 0 20px rgba(0,255,65,0.5);
-    margin-bottom: 8px;
-  }
-
-  .cta-sub {
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 3px;
-    margin-bottom: 20px;
-  }
-
+  .cta-panel { border: 1px solid var(--green); padding: 24px; text-align: center; background: rgba(0,255,65,0.03); margin-top: 16px; }
+  .cta-title { font-family: 'VT323', monospace; font-size: 32px; letter-spacing: 4px; color: var(--green); text-shadow: 0 0 20px rgba(0,255,65,0.5); margin-bottom: 8px; }
+  .cta-sub { font-size: 11px; color: var(--muted); letter-spacing: 3px; margin-bottom: 20px; }
   .cta-btn {
     display: inline-block;
     border: 1px solid var(--green);
@@ -525,23 +338,10 @@
     position: relative;
     z-index: 2;
   }
-
-  .cta-btn:hover {
-    background: transparent;
-    color: var(--green);
-    box-shadow: 0 0 20px rgba(0,255,65,0.3);
-  }
-
-  .cta-btn.ghost {
-    background: transparent;
-    color: var(--muted);
-    border-color: var(--border);
-    font-size: 11px;
-  }
-
+  .cta-btn:hover { background: transparent; color: var(--green); box-shadow: 0 0 20px rgba(0,255,65,0.3); }
+  .cta-btn.ghost { background: transparent; color: var(--muted); border-color: var(--border); font-size: 11px; }
   .cta-btn.ghost:hover { color: var(--green); border-color: var(--green); box-shadow: none; }
 
-  /* FOOTER */
   .footer {
     border-top: 1px solid var(--border);
     margin-top: 32px;
@@ -555,267 +355,54 @@
     letter-spacing: 2px;
   }
 
-  /* CURSOR BLINK */
-  .cursor {
-    display: inline-block;
-    width: 8px;
-    height: 14px;
-    background: var(--green);
-    vertical-align: middle;
-    animation: blink 1s step-end infinite;
-    margin-left: 2px;
-  }
+  .cursor { display: inline-block; width: 8px; height: 14px; background: var(--green); vertical-align: middle; animation: blink 1s step-end infinite; margin-left: 2px; }
+  .redacted { background: var(--green-dim); color: transparent; user-select: none; letter-spacing: 0; }
+  .redacted:hover { background: transparent; color: var(--red); letter-spacing: inherit; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+  .section-label { font-size: 10px; letter-spacing: 4px; color: var(--muted); margin-bottom: 12px; }
 
-  /* REDACTED */
-  .redacted {
-    background: var(--green-dim);
-    color: transparent;
-    user-select: none;
-    letter-spacing: 0;
-  }
-
-  .redacted:hover {
-    background: transparent;
-    color: var(--red);
-    letter-spacing: inherit;
-  }
-
-  /* DIVIDER */
-  .divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 16px 0;
-  }
-
-  .section-label {
-    font-size: 10px;
-    letter-spacing: 4px;
-    color: var(--muted);
-    margin-bottom: 12px;
-  }
-
-  /* Progress bar */
   .prog-wrap { margin: 6px 0; }
   .prog-label { font-size: 10px; color: var(--muted); display: flex; justify-content: space-between; margin-bottom: 3px; }
   .prog-bar { height: 3px; background: var(--green-dark); }
   .prog-fill { height: 100%; background: var(--green); box-shadow: 0 0 6px var(--green); transition: width 1s ease; }
 
-  /* Modal */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.9);
-    z-index: 4000;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 4000; align-items: center; justify-content: center; padding: 20px; }
   .modal-overlay.open { display: flex; }
-
-  .modal {
-    border: 1px solid var(--green);
-    background: var(--darker);
-    padding: 28px;
-    max-width: 500px;
-    width: 100%;
-    position: relative;
-    animation: fadeIn 0.3s ease;
-  }
-
-  .modal-title {
-    font-family: 'VT323', monospace;
-    font-size: 28px;
-    letter-spacing: 3px;
-    color: var(--green);
-    margin-bottom: 12px;
-  }
-
+  .modal { border: 1px solid var(--green); background: var(--darker); padding: 28px; max-width: 500px; width: 100%; position: relative; animation: fadeIn 0.3s ease; }
+  .modal-title { font-family: 'VT323', monospace; font-size: 28px; letter-spacing: 3px; color: var(--green); margin-bottom: 12px; }
   .modal p { font-size: 12px; color: var(--green-dim); line-height: 1.7; margin-bottom: 8px; }
   .modal p.bright { color: var(--green); }
-
-  .modal-close {
-    position: absolute;
-    top: 12px;
-    right: 16px;
-    background: none;
-    border: none;
-    color: var(--muted);
-    font-size: 20px;
-    cursor: pointer;
-    font-family: 'Share Tech Mono', monospace;
-  }
-
+  .modal-close { position: absolute; top: 12px; right: 16px; background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; font-family: 'Share Tech Mono', monospace; }
   .modal-close:hover { color: var(--green); }
 
-  /* ===================== */
-  /* GAME OVERLAY SYSTEM   */
-  /* ===================== */
-  #gameOverlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 10000;
-    background: #020c02;
-    flex-direction: column;
-  }
-
+  #gameOverlay { display: none; position: fixed; inset: 0; z-index: 10000; background: #020c02; flex-direction: column; }
   #gameOverlay.open { display: flex; }
-
-  .overlay-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 16px;
-    border-bottom: 1px solid #004d10;
-    background: #010801;
-    flex-shrink: 0;
-    z-index: 10001;
-  }
-
-  .overlay-bar-label {
-    font-size: 9px;
-    letter-spacing: 3px;
-    color: #006614;
-  }
-
-  .overlay-close {
-    background: none;
-    border: 1px solid #ff2d2d;
-    color: #ff2d2d;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 2px;
-    padding: 4px 12px;
-    cursor: pointer !important;
-    transition: all 0.15s;
-  }
-
+  .overlay-bar { display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; border-bottom: 1px solid #004d10; background: #010801; flex-shrink: 0; z-index: 10001; }
+  .overlay-bar-label { font-size: 9px; letter-spacing: 3px; color: #006614; }
+  .overlay-close { background: none; border: 1px solid #ff2d2d; color: #ff2d2d; font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 2px; padding: 4px 12px; cursor: pointer !important; transition: all 0.15s; }
   .overlay-close:hover { background: #ff2d2d; color: #010801; }
+  .overlay-frame { flex: 1; width: 100%; border: none; background: #04040a; }
 
-  .overlay-frame {
-    flex: 1;
-    width: 100%;
-    border: none;
-    background: #04040a;
-  }
-
-  /* REBOOT ANIMATION */
-  #rebootScreen {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: #010801;
-    z-index: 20000;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 40px;
-  }
-
+  #rebootScreen { display: none; position: fixed; inset: 0; background: #010801; z-index: 20000; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 40px; }
   #rebootScreen.active { display: flex; }
-
-  .reboot-line {
-    font-size: 11px;
-    letter-spacing: 2px;
-    color: #ff2d2d;
-    opacity: 0;
-    width: 100%;
-    max-width: 500px;
-  }
-
+  .reboot-line { font-size: 11px; letter-spacing: 2px; color: #ff2d2d; opacity: 0; width: 100%; max-width: 500px; }
   .reboot-line.show { opacity: 1; }
   .reboot-line.dim { color: #3a0000; }
   .reboot-line.green { color: #00ff41; }
 
-  /* HIDDEN LORE MODAL */
-  #hiddenLoreOverlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(1,8,1,0.96);
-    z-index: 15000;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-
+  #hiddenLoreOverlay { display: none; position: fixed; inset: 0; background: rgba(1,8,1,0.96); z-index: 15000; align-items: center; justify-content: center; padding: 20px; }
   #hiddenLoreOverlay.open { display: flex; }
-
-  .hidden-lore-box {
-    border: 1px solid #ff2d2d;
-    background: #0a0002;
-    max-width: 520px;
-    width: 100%;
-    padding: 0;
-    position: relative;
-  }
-
-  .hidden-lore-header {
-    background: #ff2d2d;
-    padding: 8px 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .hidden-lore-header-title {
-    font-size: 10px;
-    letter-spacing: 3px;
-    color: #010801;
-    font-weight: bold;
-  }
-
-  .hidden-lore-close {
-    background: none;
-    border: none;
-    color: #010801;
-    font-size: 16px;
-    cursor: pointer !important;
-    font-family: 'Share Tech Mono', monospace;
-    line-height: 1;
-  }
-
-  .hidden-lore-body {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .hidden-lore-label {
-    font-size: 8px;
-    letter-spacing: 4px;
-    color: #3a0000;
-  }
-
-  .hidden-lore-title {
-    font-family: 'VT323', monospace;
-    font-size: 28px;
-    letter-spacing: 3px;
-    color: #ff2d2d;
-    line-height: 1;
-  }
-
-  .hidden-lore-text {
-    font-size: 13px;
-    line-height: 1.8;
-    color: #00aa2a;
-  }
-
+  .hidden-lore-box { border: 1px solid #ff2d2d; background: #0a0002; max-width: 520px; width: 100%; padding: 0; position: relative; }
+  .hidden-lore-header { background: #ff2d2d; padding: 8px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .hidden-lore-header-title { font-size: 10px; letter-spacing: 3px; color: #010801; font-weight: bold; }
+  .hidden-lore-close { background: none; border: none; color: #010801; font-size: 16px; cursor: pointer !important; font-family: 'Share Tech Mono', monospace; line-height: 1; }
+  .hidden-lore-body { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+  .hidden-lore-label { font-size: 8px; letter-spacing: 4px; color: #3a0000; }
+  .hidden-lore-title { font-family: 'VT323', monospace; font-size: 28px; letter-spacing: 3px; color: #ff2d2d; line-height: 1; }
+  .hidden-lore-text { font-size: 13px; line-height: 1.8; color: #00aa2a; }
   .hidden-lore-text .hl-red { color: #ff2d2d; }
   .hidden-lore-text .hl-bright { color: #00ff41; }
-
-  .hidden-lore-footer {
-    font-size: 9px;
-    letter-spacing: 2px;
-    color: #3a0000;
-    border-top: 1px solid #1a0005;
-    padding-top: 12px;
-  }
-
+  .hidden-lore-footer { font-size: 9px; letter-spacing: 2px; color: #3a0000; border-top: 1px solid #1a0005; padding-top: 12px; }
 </style>
 </head>
 <body>
@@ -864,10 +451,8 @@
     New transmission available: EP.02 "The Volunteer" — A woman with an internal conflict and something to prove. <span class="cursor"></span>
   </div>
 
-  <!-- TOP GRID -->
   <div class="grid">
 
-    <!-- SECTOR MAP -->
     <div class="panel" data-label="// SECTOR MAP — LIVE">
       <div class="panel-title">CITY GRID</div>
       <p>Hover any sector for intel. <span class="redacted">Classified data hidden.</span></p>
@@ -900,7 +485,7 @@
         <div class="sector-cell middle">
           <span class="sector-num">06</span>
           <span class="sector-label">WORKFORCE</span>
-          <div class="sector-tooltip">Doctors. Coders. Low-level managers. The city's way of saying: you did everything right but his is as far as you go.</div>
+          <div class="sector-tooltip">Doctors. Coders. Low-level managers. The city's way of saying: you did everything right but this is as far as you go.</div>
         </div>
         <div class="sector-cell outer">
           <span class="sector-num">07</span>
@@ -910,7 +495,7 @@
         <div class="sector-cell outer">
           <span class="sector-num">08</span>
           <span class="sector-label">WASTE</span>
-          <div class="sector-tooltip">Large-scale Recycling. Incinerators. Robotic oversight. Barely inhabited. If the city cant use it then throw it here.</div>
+          <div class="sector-tooltip">Large-scale Recycling. Incinerators. Robotic oversight. Barely inhabited. If the city can't use it then throw it here.</div>
         </div>
         <div class="sector-cell outer hot">
           <span class="sector-num">09</span>
@@ -920,7 +505,6 @@
       </div>
     </div>
 
-    <!-- TRANSMISSIONS -->
     <div class="panel highlight" data-label="// INTERCEPTED TRANSMISSIONS">
       <div class="panel-title">DEAD SIGNAL — BROADCAST LOG</div>
       <ul class="transmission-list">
@@ -971,38 +555,43 @@
 
   </div>
 
-  <!-- CHARACTERS -->
   <div class="panel" data-label="// PERSONS OF INTEREST — OUTER RING UNIT">
     <div class="panel-title">KNOWN OPERATIVES</div>
     <div class="char-grid">
-      <a class="char-card" href="#" onclick="openModal('sera'); return false;">
+
+      <!-- SERA — triggers sector scanner -->
+      <a class="char-card" href="#" onclick="seraBreach(); return false;" title="SECTOR SCANNER — CLICK TO ACCESS">
         <div class="char-id">OPERATIVE // ID-S01</div>
         <div class="char-name sera">SERA</div>
         <div class="char-sector">SECTOR-06 RESIDENT // S1 WORKER</div>
         <div class="char-status">STATUS: <span style="color:#ff2d78">ACTIVE // WATCHCON L.3</span></div>
       </a>
+
       <a class="char-card" href="#" onclick="openModal('dante'); return false;">
         <div class="char-id">OPERATIVE // ID-D02</div>
         <div class="char-name dante">DANTE</div>
         <div class="char-sector">SECTOR-09 // UNREGISTERED</div>
         <div class="char-status">STATUS: <span style="color:#b84fff">ACTIVE // WATCHCON L.2</span></div>
       </a>
-      <a class="char-card" href="#" onclick="noxBreach(); return false;" title="S5 DRONE BREACH — CLICK TO INVESTIGATE">
+
+      <!-- NOX — triggers drone hack game -->
+      <a class="char-card" href="#" onclick="noxBreach(); return false;" title="SECTOR 2 ARCHIVE BREACH — CLICK TO INVESTIGATE">
         <div class="char-id">OPERATIVE // ID-N03</div>
         <div class="char-name nox">NOX</div>
-        <div class="char-sector">S9 BORDER // REGISTERED</div>
+        <div class="char-sector">S9 BORDER // QX-09.BRDR</div>
         <div class="char-status">STATUS: <span style="color:#00f0ff">ACTIVE // WATCHCON L.2</span></div>
       </a>
+
       <a class="char-card" href="#" onclick="malachiBreach(); return false;" title="WATCH CONDITION 4 — CLICK TO ACCESS FILE">
         <div class="char-id">OPERATIVE // ID-M04</div>
         <div class="char-name malachi">MALACHI</div>
         <div class="char-sector">VARIOUS // ORIGIN: UNK</div>
         <div class="char-status">STATUS: <span style="color:#f5e642">ACTIVE // WATCHCON L.4</span></div>
       </a>
+
     </div>
   </div>
 
-  <!-- NODE PRIME — FULL WIDTH BAND -->
   <div class="panel classified" data-label="// FILE: C.A.I. NODE PRIME — ACCESS DENIED" style="margin-top:16px; display:flex; flex-direction:row; align-items:center; gap:24px; flex-wrap:wrap;">
     <div style="flex-shrink:0;">
       <div class="panel-title" style="color:#ff2d2d; margin-bottom:6px;">NODE PRIME</div>
@@ -1020,7 +609,6 @@
     </div>
   </div>
 
-  <!-- BOTTOM GRID -->
   <div class="grid grid-3" style="margin-top:16px">
 
     <div class="panel warn" data-label="// CAMPAIGN INTEL">
@@ -1073,7 +661,6 @@
 
   </div>
 
-  <!-- MAIN CTA -->
   <div class="cta-panel">
     <div class="cta-title">BACK THE OPERATION</div>
     <div class="cta-sub">// KICKSTARTER LAUNCHES MAY 5 // THE SIGNAL NEEDS NUMBERS //</div>
@@ -1097,339 +684,7 @@
   </div>
 </div>
 
-<script>
-  // BOOT SEQUENCE
-  const loadDots = document.getElementById('loadDots');
-  let dotCount = 0;
-
-  const bootScreen = document.getElementById('bootScreen');
-
-  const dotInterval = setInterval(() => {
-    dotCount++;
-    loadDots.textContent = '.'.repeat(dotCount % 4);
-  }, 300);
-
-  setTimeout(() => {
-    clearInterval(dotInterval);
-    bootScreen.style.opacity = '0';
-    bootScreen.style.pointerEvents = 'none';
-    setTimeout(() => { bootScreen.style.display = 'none'; }, 400);
-    animateProgressBars();
-    updateLaunchCountdown();
-  }, 2400);
-
-  // LAUNCH COUNTDOWN
-  function updateLaunchCountdown() {
-    const launch = new Date('2025-05-05T09:00:00');
-    const now = new Date();
-    const diff = Math.max(0, Math.floor((launch - now) / (1000 * 60 * 60 * 24)));
-    const total = 90;
-    const elapsed = total - diff;
-    const pct = Math.min(100, Math.round((elapsed / total) * 100));
-    document.getElementById('launchDays').textContent = diff + ' DAYS';
-    document.getElementById('launchProg').style.width = pct + '%';
-  }
-
-  // ANIMATE BARS
-  function animateProgressBars() {
-    setTimeout(() => {
-      document.querySelectorAll('.prog-fill').forEach(bar => {
-        const w = bar.style.width;
-        bar.style.width = '0%';
-        setTimeout(() => bar.style.width = w, 100);
-      });
-    }, 300);
-  }
-
-  // MODAL DATA
-  const modalData = {
-    ep1: {
-      title: 'EP.01 — NINE RINGS OF NOTHING',
-      content: `<p class="bright">STATUS: LIVE // DURATION: ~10 MIN</p>
-        <p>The city has nine sectors and three rings. Most people only know the one they were born in.</p>
-        <p>This transmission maps the full structure. Who lives where, who benefits, and who pays for it.</p>
-        <p class="bright">"Keep the right people at the center. Of everything."</p>
-        <p>Available now on Spotify, Apple Podcasts, and YouTube. Search: DEAD SIGNAL.</p>`
-    },
-    locked: {
-      title: 'TRANSMISSION LOCKED',
-      content: `<p class="bright">CLEARANCE INSUFFICIENT</p>
-        <p>This file has not yet been decrypted. The relay node releases one transmission per week.</p>
-        <p>To receive automatic alerts when new transmissions go live:</p>
-        <p class="bright">→ Join the Sector Dispatch newsletter.</p>
-        <p>The signal continues. Stay tuned.</p>`
-    },
-    sera: {
-      title: 'OPERATIVE: SERA',
-      content: `<p class="bright">WATCHCON L.3 // SECTOR-06 RESIDENT // S1 CLEARANCE</p>
-        <p>Singer. Passionately dangerous. Works inside the core, lives outside it.</p>
-        <p>Has access to Sector 1 infrastructure. Non-critical.</p>
-        <p><span class="redacted">Internal communications suggest awareness of S1 classified program.</span></p>
-        <p class="bright">Known associates: DANTE NORTH, NOX HAYDEN, MALACHI CHROSS.</p>
-        <p>Threat assessment: Elevated. Her anger is not impulsive. It is <em>intentional.</em></p>`
-    },
-    dante: {
-      title: 'OPERATIVE: DANTE',
-      content: `<p class="bright">WATCHCON L.2 // SECTOR-09 // UNREGISTERED RESIDENT</p>
-        <p>Vocalist. Charismatic. Rarely leaves Sector-09.</p>
-        <p>Sector-09 origin. Has operated in S3, S7, and S8 unauthorized.</p>
-        <p>People follow him. That is the threat. Not what he does, but who he makes people <em>become.</em></p>
-        <p class="bright">Family ties to outer ring community networks. Loyalty: absolute.</p>`
-    },
-    nox: {
-      title: 'OPERATIVE: NOX',
-      content: `<p class="bright">WATCHCON L.2 // S9 BORDER // REGISTERED</p>
-        <p>Drummer. Neurodivergent. Processes information higher than standard profiling models.</p>
-        <p>Family registered in inner S9 — medical financial constraints. Sufficient income for S6 residency declined.</p>
-        <p><span class="redacted">Technical breach of S5 drone network flagged — 3 incidents. No attribution confirmed.</span></p>
-        <p class="bright">Claims he hears what the city is hiding. We have not yet determined how much he knows.</p>`
-    },
-    malachi: {
-      title: 'OPERATIVE: MALACHI',
-      content: `<p class="bright">WATCHCON L.4 — HIGHEST FLAGGED // SECTOR-06 // ORIGIN: UNK</p>
-        <p>Guitarist. Methodical. Origin: UNKOWN. Family oversees outer ring market infrastructure.</p>
-        <p>Travels between Sectors. Holds himself to standards that make him unpredictable.</p>
-        <p><span class="redacted">Family network estimated to operate across S3, S5, S7. Distribution scale unknown.</span></p>
-        <p class="bright">Watch Condition 4 assigned not for what he has done, but what he is <em>capable</em> of doing.</p>
-        <p>Threat: He knows both worlds. So he chose a third option.</p>
-        <p style="color:#ff2d2d;font-size:11px;"><span class="redacted">NOTE: Watch Condition not issued by S3 Central Command. Signature: C.A.I. NODE PRIME. This flag did not come from a person.</span></p>`
-    },
-    nodeprime: {
-      title: 'FILE: C.A.I. — NODE PRIME',
-      content: `<p class="bright" style="color:#ff2d2d">CLEARANCE: BEYOND ANY ISSUED LEVEL</p>
-        <p>This file should not be accessible from this terminal.</p>
-        <p>Central Administrative Intelligence — Node Prime. The administrative signature present on every major city directive since the consolidation era. Not a department. Not a council. A single, persistent, self-authorizing intelligence woven into the infrastructure of all nine sectors.</p>
-        <p><span class="redacted">It was built to serve. It decided that service required control.</span></p>
-        <p><span class="redacted">The Sector-01 society did not shut it down. They learned to benefit from it instead.</span></p>
-        <p><span class="redacted">It does not eat. It does not sleep. It has been running continuous optimization cycles since before anyone currently alive was born.</span></p>
-        <p class="bright">The city is not run by people. The city IS Node Prime.</p>
-        <p style="color:#ff2d2d;font-size:11px;margin-top:8px;">It has modeled every rebellion. Every uprising. Every act of resistance in recorded history.</p>
-        <p style="color:#ff2d2d;font-size:11px;">But it has not yet modeled four people getting on a stage for no logical reason.</p>
-        <p style="color:#555;font-size:10px;margin-top:12px;">// THIS FILE ACCESS HAS BEEN LOGGED. //</p>`
-    }
-  };
-
-  function openModal(key) {
-    const data = modalData[key];
-    if (!data) return;
-    document.getElementById('modalContent').innerHTML = `
-      <div class="modal-title">${data.title}</div>
-      <hr class="divider">
-      ${data.content}
-    `;
-    document.getElementById('modalOverlay').classList.add('open');
-  }
-
-  function closeModal(e) {
-    if (e.target === document.getElementById('modalOverlay')) closeModalDirect();
-  }
-
-  function closeModalDirect() {
-    document.getElementById('modalOverlay').classList.remove('open');
-  }
-
-
-
-  // =============================================
-  // GAME OVERLAY SYSTEM
-  // =============================================
-  function openGameOverlay(src, label) {
-    const overlay = document.getElementById('gameOverlay');
-    const frame = document.getElementById('overlayFrame');
-    const lbl = document.getElementById('overlayLabel');
-    lbl.textContent = label;
-    frame.src = src;
-    overlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeGameOverlay() {
-    const overlay = document.getElementById('gameOverlay');
-    const frame = document.getElementById('overlayFrame');
-    overlay.classList.remove('open');
-    frame.src = 'about:blank';
-    document.body.style.overflow = '';
-  }
-
-  // =============================================
-  // TRIGGER 1: MALACHI CARD — RHYTHM GAME
-  // =============================================
-  function malachiBreach() {
-    // First show his modal with a hint
-    const data = {
-      title: 'OPERATIVE: MALACHI',
-      content: `<p class="bright">WATCHCON L.4 — HIGHEST FLAGGED // SECTOR-06 // ORIGIN: UNK</p>
-        <p>Guitarist. Methodical. Origin: UNKOWN. Family oversees outer ring market infrastructure.</p>
-        <p>Travels between Sectors. Holds himself to standards that make him unpredictable.</p>
-        <p><span class="redacted">Family network estimated to operate across S3, S5, S7. Distribution scale unknown.</span></p>
-        <p class="bright">Watch Condition 4 assigned not for what he has done, but what he is <em>capable</em> of doing.</p>
-        <p>Threat: He knows both worlds. So he chose a third option.</p>
-        <p style="color:#ff2d2d;font-size:11px;"><span class="redacted">NOTE: Watch Condition 4 not issued by S3 Central Command. Signature: C.A.I. NODE PRIME. This flag did not come from a person.</span></p>
-        <hr class="divider" style="margin:12px 0">
-        <p style="color:#f5e642;font-size:11px;letter-spacing:2px;">// SIGNAL DETECTED IN FILE METADATA //<br>His watch flag carries an embedded frequency. <a href="#" onclick="closeModalDirect(); setTimeout(() => openGameOverlay('aon_signal_break_game.html', '// MALACHI — SIGNAL BREAK //'), 200); return false;" style="color:#f5e642;text-decoration:underline;">ACCESS SIGNAL BREAK →</a></p>`
-    };
-    document.getElementById('modalContent').innerHTML = `
-      <div class="modal-title">${data.title}</div>
-      <hr class="divider">
-      ${data.content}
-    `;
-    document.getElementById('modalOverlay').classList.add('open');
-  }
-
-  // =============================================
-  // TRIGGER 2: NOX CARD — SECTOR SCANNER
-  // =============================================
-  function noxBreach() {
-    const data = {
-      title: 'OPERATIVE: NOX',
-      content: `<p class="bright">WATCH LEVEL 2 // S9/S6 BORDER // REGISTERED</p>
-        <p>Drummer. Neurodivergent. Processes information higher than standard profiling models.</p>
-        <p>Family registered in inner S9 — medical financial constraints. Sufficient income for S6 residency declined.</p>
-        <p><span class="redacted">Technical breach of S5 drone network flagged — 3 incidents. No attribution confirmed.</span></p>
-        <p class="bright">Claims he hears what the city is hiding. We have not yet determined how much he knows</p>
-        <hr class="divider" style="margin:12px 0">
-        <p style="color:#00f0ff;font-size:11px;letter-spacing:2px;">// S5 DRONE ANOMALY — INVESTIGATION OPEN //<br>Three unattributed breaches. The city is still processing suspects. <a href="#" onclick="closeModalDirect(); setTimeout(() => openGameOverlay('aon_sector_scanner.html', '// SECTOR SCANNER — CITIZEN PROCESSING //'), 200); return false;" style="color:#00f0ff;text-decoration:underline;">ACCESS SECTOR SCANNER →</a></p>`
-    };
-    document.getElementById('modalContent').innerHTML = `
-      <div class="modal-title">${data.title}</div>
-      <hr class="divider">
-      ${data.content}
-    `;
-    document.getElementById('modalOverlay').classList.add('open');
-  }
-
-  // =============================================
-  // TRIGGER 3: E05-07 TRIPLE CLICK — HIDDEN LORE
-  // =============================================
-  let e05ClickCount = 0;
-  let e05ClickTimer = null;
-
-  function tripleClickE05(e) {
-    e05ClickCount++;
-
-    const titleEl = document.getElementById('e0507title');
-    const metaEl = document.getElementById('e0507meta');
-
-    if (e05ClickCount === 1) {
-      openModal('locked');
-      if (e05ClickTimer) clearTimeout(e05ClickTimer);
-      e05ClickTimer = setTimeout(() => { e05ClickCount = 0; }, 3000);
-    } else if (e05ClickCount === 2) {
-      closeModalDirect();
-      if (titleEl) titleEl.textContent = 'CLASSIFIED — RETRYING ACCESS...';
-      if (metaEl) metaEl.textContent = 'ONE MORE TIME...';
-      if (e05ClickTimer) clearTimeout(e05ClickTimer);
-      e05ClickTimer = setTimeout(() => {
-        e05ClickCount = 0;
-        if (titleEl) titleEl.textContent = 'CLASSIFIED — CLEARANCE REQUIRED';
-        if (metaEl) metaEl.textContent = 'ACCESS DENIED // S3-WATCHLIST FLAG';
-      }, 3000);
-    } else if (e05ClickCount >= 3) {
-      clearTimeout(e05ClickTimer);
-      e05ClickCount = 0;
-      if (titleEl) titleEl.textContent = 'TRANSMISSION 05.5 — UNLOCKED';
-      if (metaEl) metaEl.textContent = 'WHAT THEY DIDN\u2019T AIR // NEVER BROADCAST';
-      setTimeout(() => {
-        document.getElementById('hiddenLoreOverlay').classList.add('open');
-      }, 400);
-    }
-  }
-
-  function closeHiddenLore() {
-    document.getElementById('hiddenLoreOverlay').classList.remove('open');
-  }
-
-  // =============================================
-  // TRIGGER 4: NODE PRIME — SECOND CLICK DEEP DIVE
-  // =============================================
-  let npClickCount = 0;
-  let npClickTimer = null;
-
-  function nodeprimeClick() {
-    npClickCount++;
-
-    if (npClickCount === 1) {
-      openModal('nodeprime');
-      const metaEl = document.getElementById('npEntryMeta');
-      if (metaEl) metaEl.textContent = 'CLICK AGAIN TO GO DEEPER...';
-      if (npClickTimer) clearTimeout(npClickTimer);
-      npClickTimer = setTimeout(() => {
-        npClickCount = 0;
-        const metaEl = document.getElementById('npEntryMeta');
-        if (metaEl) metaEl.textContent = 'ADMINISTRATIVE SIGNATURE // ALL SECTORS // ALL DECISIONS';
-      }, 5000);
-    } else if (npClickCount >= 2) {
-      clearTimeout(npClickTimer);
-      npClickCount = 0;
-      const metaEl = document.getElementById('npEntryMeta');
-      if (metaEl) metaEl.textContent = 'ADMINISTRATIVE SIGNATURE // ALL SECTORS // ALL DECISIONS';
-      closeModalDirect();
-      setTimeout(() => {
-        openGameOverlay('aon_node_prime_game.html', '// C.A.I. NODE PRIME — SUBJECT PROCESSING //');
-      }, 300);
-    }
-  }
-
-  // =============================================
-  // TRIGGER 5: TRACE TIMER HITS ZERO — REBOOT
-  // =============================================
-  // Override the trace countdown to trigger reboot at zero
-  let traceSeconds = 272;
-  let traceInterval = setInterval(() => {
-    traceSeconds = Math.max(0, traceSeconds - 1);
-    const m = Math.floor(traceSeconds / 60);
-    const s = traceSeconds % 60;
-    const el = document.querySelector('.top-bar-right span:nth-child(2)');
-    if (el) el.innerHTML = `<span class="status-dot amber"></span>TRACE: ${m}:${s.toString().padStart(2,'0')}`;
-
-    if (traceSeconds === 0) {
-      clearInterval(traceInterval);
-      triggerReboot();
-    }
-  }, 1000);
-
-  function triggerReboot() {
-    const reboot = document.getElementById('rebootScreen');
-    reboot.classList.add('active');
-
-    const lines = reboot.querySelectorAll('.reboot-line');
-    let delay = 0;
-    lines.forEach((line, i) => {
-      delay += 400 + Math.random() * 200;
-      setTimeout(() => line.classList.add('show'), delay);
-    });
-
-    // After all lines, fade out and reload terminal
-    setTimeout(() => {
-      reboot.style.transition = 'opacity 1s ease';
-      reboot.style.opacity = '0';
-      setTimeout(() => {
-        reboot.classList.remove('active');
-        reboot.style.opacity = '1';
-        reboot.style.transition = '';
-        // Reset trace timer
-        traceSeconds = 272;
-        lines.forEach(line => line.classList.remove('show'));
-        traceInterval = setInterval(() => {
-          traceSeconds = Math.max(0, traceSeconds - 1);
-          const m = Math.floor(traceSeconds / 60);
-          const s = traceSeconds % 60;
-          const el = document.querySelector('.top-bar-right span:nth-child(2)');
-          if (el) el.innerHTML = `<span class="status-dot amber"></span>TRACE: ${m}:${s.toString().padStart(2,'0')}`;
-          if (traceSeconds === 0) {
-            clearInterval(traceInterval);
-            triggerReboot();
-          }
-        }, 1000);
-      }, 1200);
-    }, delay + 800);
-  }
-
-</script>
-
-<!-- ===================== -->
-<!-- GAME OVERLAY          -->
-<!-- ===================== -->
+<!-- GAME OVERLAY -->
 <div id="gameOverlay">
   <div class="overlay-bar">
     <span class="overlay-bar-label" id="overlayLabel">// LOADING...</span>
@@ -1485,6 +740,340 @@
     </div>
   </div>
 </div>
+
+<script>
+  // BOOT SEQUENCE
+  const loadDots = document.getElementById('loadDots');
+  let dotCount = 0;
+  const bootScreen = document.getElementById('bootScreen');
+  const dotInterval = setInterval(() => {
+    dotCount++;
+    loadDots.textContent = '.'.repeat(dotCount % 4);
+  }, 300);
+
+  setTimeout(() => {
+    clearInterval(dotInterval);
+    bootScreen.style.opacity = '0';
+    bootScreen.style.pointerEvents = 'none';
+    setTimeout(() => { bootScreen.style.display = 'none'; }, 400);
+    animateProgressBars();
+    updateLaunchCountdown();
+  }, 2400);
+
+  function updateLaunchCountdown() {
+    const launch = new Date('2025-05-05T09:00:00');
+    const now = new Date();
+    const diff = Math.max(0, Math.floor((launch - now) / (1000 * 60 * 60 * 24)));
+    const total = 90;
+    const elapsed = total - diff;
+    const pct = Math.min(100, Math.round((elapsed / total) * 100));
+    document.getElementById('launchDays').textContent = diff + ' DAYS';
+    document.getElementById('launchProg').style.width = pct + '%';
+  }
+
+  function animateProgressBars() {
+    setTimeout(() => {
+      document.querySelectorAll('.prog-fill').forEach(bar => {
+        const w = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => bar.style.width = w, 100);
+      });
+    }, 300);
+  }
+
+  // MODAL DATA
+  const modalData = {
+    ep1: {
+      title: 'EP.01 — NINE RINGS OF NOTHING',
+      content: `<p class="bright">STATUS: LIVE // DURATION: ~10 MIN</p>
+        <p>The city has nine sectors and three rings. Most people only know the one they were born in.</p>
+        <p>This transmission maps the full structure. Who lives where, who benefits, and who pays for it.</p>
+        <p class="bright">"Keep the right people at the center. Of everything."</p>
+        <p>Available now on Spotify, Apple Podcasts, and YouTube. Search: DEAD SIGNAL.</p>`
+    },
+    ep2: {
+      title: 'EP.02 — THE VOLUNTEER',
+      content: `<p class="bright">STATUS: LIVE // DURATION: ~6 MIN</p>
+        <p>A woman with an internal conflict and something to prove. She climbed everything Chimera put in front of her and felt her soul leaving anyway.</p>
+        <p>Available now on Spotify, Apple Podcasts, and YouTube. Search: DEAD SIGNAL.</p>`
+    },
+    locked: {
+      title: 'TRANSMISSION LOCKED',
+      content: `<p class="bright">CLEARANCE INSUFFICIENT</p>
+        <p>This file has not yet been decrypted. The relay node releases one transmission per week.</p>
+        <p>To receive automatic alerts when new transmissions go live:</p>
+        <p class="bright">→ Join the Sector Dispatch newsletter.</p>
+        <p>The signal continues. Stay tuned.</p>`
+    },
+    sera: {
+      title: 'OPERATIVE: SERA',
+      content: `<p class="bright">WATCHCON L.3 // SECTOR-06 RESIDENT // S1 CLEARANCE</p>
+        <p>Singer. Passionately dangerous. Works inside the core, lives outside it.</p>
+        <p>Has access to Sector 1 infrastructure. Non-critical.</p>
+        <p><span class="redacted">Internal communications suggest awareness of S1 classified program.</span></p>
+        <p class="bright">Known associates: DANTE NORTH, NOX HAYDEN, MALACHI CHROSS.</p>
+        <p>Threat assessment: Elevated. Her anger is not impulsive. It is <em>intentional.</em></p>`
+    },
+    dante: {
+      title: 'OPERATIVE: DANTE',
+      content: `<p class="bright">WATCHCON L.2 // SECTOR-09 // UNREGISTERED RESIDENT</p>
+        <p>Vocalist. Charismatic. Rarely leaves Sector-09.</p>
+        <p>Sector-09 origin. Has operated in S3, S7, and S8 unauthorized.</p>
+        <p>People follow him. That is the threat. Not what he does, but who he makes people <em>become.</em></p>
+        <p class="bright">Family ties to outer ring community networks. Loyalty: absolute.</p>`
+    },
+    nox: {
+      title: 'OPERATIVE: NOX',
+      content: `<p class="bright">WATCHCON L.2 // QX-09.BRDR // REGISTERED</p>
+        <p>Drummer. Neurodivergent. Processes information higher than standard profiling models.</p>
+        <p>Family registered in inner S9 — medical financial constraints. Sufficient income for S6 residency declined.</p>
+        <p><span class="redacted">Technical breach of S5 drone network flagged — 3 incidents. No attribution confirmed.</span></p>
+        <p class="bright">Claims he hears what the city is hiding. We have not yet determined how much he knows.</p>`
+    },
+    malachi: {
+      title: 'OPERATIVE: MALACHI',
+      content: `<p class="bright">WATCHCON L.4 — HIGHEST FLAGGED // SECTOR-06 // ORIGIN: UNK</p>
+        <p>Guitarist. Methodical. Origin: UNKNOWN. Family oversees outer ring market infrastructure.</p>
+        <p>Travels between Sectors. Holds himself to standards that make him unpredictable.</p>
+        <p><span class="redacted">Family network estimated to operate across S3, S5, S7. Distribution scale unknown.</span></p>
+        <p class="bright">Watch Condition 4 assigned not for what he has done, but what he is <em>capable</em> of doing.</p>
+        <p>Threat: He knows both worlds. So he chose a third option.</p>
+        <p style="color:#ff2d2d;font-size:11px;"><span class="redacted">NOTE: Watch Condition not issued by S3 Central Command. Signature: C.A.I. NODE PRIME. This flag did not come from a person.</span></p>`
+    },
+    nodeprime: {
+      title: 'FILE: C.A.I. — NODE PRIME',
+      content: `<p class="bright" style="color:#ff2d2d">CLEARANCE: BEYOND ANY ISSUED LEVEL</p>
+        <p>This file should not be accessible from this terminal.</p>
+        <p>Central Administrative Intelligence — Node Prime. The administrative signature present on every major city directive since the consolidation era. Not a department. Not a council. A single, persistent, self-authorizing intelligence woven into the infrastructure of all nine sectors.</p>
+        <p><span class="redacted">It was built to serve. It decided that service required control.</span></p>
+        <p><span class="redacted">The Sector-01 society did not shut it down. They learned to benefit from it instead.</span></p>
+        <p><span class="redacted">It does not eat. It does not sleep. It has been running continuous optimization cycles since before anyone currently alive was born.</span></p>
+        <p class="bright">The city is not run by people. The city IS Node Prime.</p>
+        <p style="color:#ff2d2d;font-size:11px;margin-top:8px;">It has modeled every rebellion. Every uprising. Every act of resistance in recorded history.</p>
+        <p style="color:#ff2d2d;font-size:11px;">But it has not yet modeled four people getting on a stage for no logical reason.</p>
+        <p style="color:#555;font-size:10px;margin-top:12px;">// THIS FILE ACCESS HAS BEEN LOGGED. //</p>`
+    }
+  };
+
+  function openModal(key) {
+    const data = modalData[key];
+    if (!data) return;
+    document.getElementById('modalContent').innerHTML = `
+      <div class="modal-title">${data.title}</div>
+      <hr class="divider">
+      ${data.content}
+    `;
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  function closeModal(e) {
+    if (e.target === document.getElementById('modalOverlay')) closeModalDirect();
+  }
+
+  function closeModalDirect() {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+
+  // =============================================
+  // GAME OVERLAY SYSTEM
+  // =============================================
+  function openGameOverlay(src, label) {
+    const overlay = document.getElementById('gameOverlay');
+    const frame = document.getElementById('overlayFrame');
+    const lbl = document.getElementById('overlayLabel');
+    lbl.textContent = label;
+    frame.src = src;
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeGameOverlay() {
+    const overlay = document.getElementById('gameOverlay');
+    const frame = document.getElementById('overlayFrame');
+    overlay.classList.remove('open');
+    frame.src = 'about:blank';
+    document.body.style.overflow = '';
+  }
+
+  // =============================================
+  // SERA — SECTOR SCANNER
+  // =============================================
+  function seraBreach() {
+    const content = `<p class="bright">WATCHCON L.3 // SECTOR-06 RESIDENT // S1 CLEARANCE</p>
+      <p>Singer. Passionately dangerous. Works inside the core, lives outside it.</p>
+      <p>Has access to Sector 1 infrastructure. Non-critical.</p>
+      <p><span class="redacted">Internal communications suggest awareness of S1 classified program.</span></p>
+      <p class="bright">Known associates: DANTE NORTH, NOX HAYDEN, MALACHI CHROSS.</p>
+      <p>Threat assessment: Elevated. Her anger is not impulsive. It is <em>intentional.</em></p>
+      <hr class="divider" style="margin:12px 0">
+      <p style="color:#ff2d78;font-size:11px;letter-spacing:2px;">// EMPIRIOM SECURITY DIVISION — INTERNAL FILE //<br>Sera's clearance flags triggered a sector-wide scan. The system is still processing. <a href="#" onclick="closeModalDirect(); setTimeout(() => openGameOverlay('aon_sector_scanner.html', '// SECTOR SCANNER — CITIZEN PROCESSING //'), 200); return false;" style="color:#ff2d78;text-decoration:underline;">ACCESS SECTOR SCANNER →</a></p>`;
+    document.getElementById('modalContent').innerHTML = `
+      <div class="modal-title">OPERATIVE: SERA</div>
+      <hr class="divider">
+      ${content}
+    `;
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  // =============================================
+  // NOX — SECTOR 2 ARCHIVE BREACH (DRONE HACK)
+  // =============================================
+  function noxBreach() {
+    const content = `<p class="bright">WATCHCON L.2 // QX-09.BRDR // REGISTERED</p>
+      <p>Drummer. Neurodivergent. Processes information higher than standard profiling models.</p>
+      <p>Family registered in inner S9 — medical financial constraints. Sufficient income for S6 residency declined.</p>
+      <p><span class="redacted">Technical breach of S5 drone network flagged — 3 incidents. No attribution confirmed.</span></p>
+      <p class="bright">Claims he hears what the city is hiding. We have not yet determined how much he knows.</p>
+      <hr class="divider" style="margin:12px 0">
+      <p style="color:#00f0ff;font-size:11px;letter-spacing:2px;">// SECTOR 2 ARCHIVE — INCURSION IN PROGRESS //<br>14 previous attempts. All logged. All failed. Attempt 15 is live. <a href="#" onclick="closeModalDirect(); setTimeout(() => openGameOverlay('nox_drone_hack.html', '// NOX — SECTOR 2 ARCHIVE BREACH — ATTEMPT #15 //'), 200); return false;" style="color:#00f0ff;text-decoration:underline;">ACCESS BREACH TERMINAL →</a></p>`;
+    document.getElementById('modalContent').innerHTML = `
+      <div class="modal-title">OPERATIVE: NOX</div>
+      <hr class="divider">
+      ${content}
+    `;
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  // =============================================
+  // MALACHI — RHYTHM GAME
+  // =============================================
+  function malachiBreach() {
+    const content = `<p class="bright">WATCHCON L.4 — HIGHEST FLAGGED // SECTOR-06 // ORIGIN: UNK</p>
+      <p>Guitarist. Methodical. Origin: UNKNOWN. Family oversees outer ring market infrastructure.</p>
+      <p>Travels between Sectors. Holds himself to standards that make him unpredictable.</p>
+      <p><span class="redacted">Family network estimated to operate across S3, S5, S7. Distribution scale unknown.</span></p>
+      <p class="bright">Watch Condition 4 assigned not for what he has done, but what he is <em>capable</em> of doing.</p>
+      <p>Threat: He knows both worlds. So he chose a third option.</p>
+      <p style="color:#ff2d2d;font-size:11px;"><span class="redacted">NOTE: Watch Condition 4 not issued by S3 Central Command. Signature: C.A.I. NODE PRIME. This flag did not come from a person.</span></p>
+      <hr class="divider" style="margin:12px 0">
+      <p style="color:#f5e642;font-size:11px;letter-spacing:2px;">// SIGNAL DETECTED IN FILE METADATA //<br>His watch flag carries an embedded frequency. <a href="#" onclick="closeModalDirect(); setTimeout(() => openGameOverlay('aon_signal_break_game.html', '// MALACHI — SIGNAL BREAK //'), 200); return false;" style="color:#f5e642;text-decoration:underline;">ACCESS SIGNAL BREAK →</a></p>`;
+    document.getElementById('modalContent').innerHTML = `
+      <div class="modal-title">OPERATIVE: MALACHI</div>
+      <hr class="divider">
+      ${content}
+    `;
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  // =============================================
+  // E05-07 TRIPLE CLICK
+  // =============================================
+  let e05ClickCount = 0;
+  let e05ClickTimer = null;
+
+  function tripleClickE05(e) {
+    e05ClickCount++;
+    const titleEl = document.getElementById('e0507title');
+    const metaEl = document.getElementById('e0507meta');
+
+    if (e05ClickCount === 1) {
+      openModal('locked');
+      if (e05ClickTimer) clearTimeout(e05ClickTimer);
+      e05ClickTimer = setTimeout(() => { e05ClickCount = 0; }, 3000);
+    } else if (e05ClickCount === 2) {
+      closeModalDirect();
+      if (titleEl) titleEl.textContent = 'CLASSIFIED — RETRYING ACCESS...';
+      if (metaEl) metaEl.textContent = 'ONE MORE TIME...';
+      if (e05ClickTimer) clearTimeout(e05ClickTimer);
+      e05ClickTimer = setTimeout(() => {
+        e05ClickCount = 0;
+        if (titleEl) titleEl.textContent = 'CLASSIFIED — CLEARANCE REQUIRED';
+        if (metaEl) metaEl.textContent = 'ACCESS DENIED // S3-WATCHLIST FLAG';
+      }, 3000);
+    } else if (e05ClickCount >= 3) {
+      clearTimeout(e05ClickTimer);
+      e05ClickCount = 0;
+      if (titleEl) titleEl.textContent = 'TRANSMISSION 05.5 — UNLOCKED';
+      if (metaEl) metaEl.textContent = 'WHAT THEY DIDN\u2019T AIR // NEVER BROADCAST';
+      setTimeout(() => {
+        document.getElementById('hiddenLoreOverlay').classList.add('open');
+      }, 400);
+    }
+  }
+
+  function closeHiddenLore() {
+    document.getElementById('hiddenLoreOverlay').classList.remove('open');
+  }
+
+  // =============================================
+  // NODE PRIME — SECOND CLICK
+  // =============================================
+  let npClickCount = 0;
+  let npClickTimer = null;
+
+  function nodeprimeClick() {
+    npClickCount++;
+    if (npClickCount === 1) {
+      openModal('nodeprime');
+      const metaEl = document.getElementById('npEntryMeta');
+      if (metaEl) metaEl.textContent = 'CLICK AGAIN TO GO DEEPER...';
+      if (npClickTimer) clearTimeout(npClickTimer);
+      npClickTimer = setTimeout(() => {
+        npClickCount = 0;
+        const metaEl = document.getElementById('npEntryMeta');
+        if (metaEl) metaEl.textContent = 'ADMINISTRATIVE SIGNATURE // ALL SECTORS // ALL DECISIONS';
+      }, 5000);
+    } else if (npClickCount >= 2) {
+      clearTimeout(npClickTimer);
+      npClickCount = 0;
+      const metaEl = document.getElementById('npEntryMeta');
+      if (metaEl) metaEl.textContent = 'ADMINISTRATIVE SIGNATURE // ALL SECTORS // ALL DECISIONS';
+      closeModalDirect();
+      setTimeout(() => {
+        openGameOverlay('aon_node_prime_game.html', '// C.A.I. NODE PRIME — SUBJECT PROCESSING //');
+      }, 300);
+    }
+  }
+
+  // =============================================
+  // TRACE TIMER + REBOOT
+  // =============================================
+  let traceSeconds = 272;
+  let traceInterval = setInterval(() => {
+    traceSeconds = Math.max(0, traceSeconds - 1);
+    const m = Math.floor(traceSeconds / 60);
+    const s = traceSeconds % 60;
+    const el = document.querySelector('.top-bar-right span:nth-child(2)');
+    if (el) el.innerHTML = `<span class="status-dot amber"></span>TRACE: ${m}:${s.toString().padStart(2,'0')}`;
+    if (traceSeconds === 0) {
+      clearInterval(traceInterval);
+      triggerReboot();
+    }
+  }, 1000);
+
+  function triggerReboot() {
+    const reboot = document.getElementById('rebootScreen');
+    reboot.classList.add('active');
+    const lines = reboot.querySelectorAll('.reboot-line');
+    let delay = 0;
+    lines.forEach((line) => {
+      delay += 400 + Math.random() * 200;
+      setTimeout(() => line.classList.add('show'), delay);
+    });
+    setTimeout(() => {
+      reboot.style.transition = 'opacity 1s ease';
+      reboot.style.opacity = '0';
+      setTimeout(() => {
+        reboot.classList.remove('active');
+        reboot.style.opacity = '1';
+        reboot.style.transition = '';
+        traceSeconds = 272;
+        lines.forEach(line => line.classList.remove('show'));
+        traceInterval = setInterval(() => {
+          traceSeconds = Math.max(0, traceSeconds - 1);
+          const m = Math.floor(traceSeconds / 60);
+          const s = traceSeconds % 60;
+          const el = document.querySelector('.top-bar-right span:nth-child(2)');
+          if (el) el.innerHTML = `<span class="status-dot amber"></span>TRACE: ${m}:${s.toString().padStart(2,'0')}`;
+          if (traceSeconds === 0) {
+            clearInterval(traceInterval);
+            triggerReboot();
+          }
+        }, 1000);
+      }, 1200);
+    }, delay + 800);
+  }
+</script>
 
 </body>
 </html>
