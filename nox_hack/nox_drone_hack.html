@@ -1783,6 +1783,9 @@ function resetGame() {
   clearInterval(state.timerInterval);
   clearInterval(state.attackLoop);
   clearInterval(state.noxLoop);
+  stopTick();
+  stopLoop();
+  bgmStop();
   state.phase = 'idle';
   document.getElementById('range-hint').style.display = 'none';
   state.abilityCooldowns = { touch: 0, aoe: 0, range: 0 };
