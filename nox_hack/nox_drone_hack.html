@@ -757,34 +757,33 @@ const DRONE_ATTACK_RANGE = { touch: SPRITE_SIZE * 1.2, swarm: SPRITE_SIZE * 1.8,
 // ══════════════════════════════════════════════
 const AUDIO_FILES = {
   // ── BACKGROUND MUSIC ──────────────────────────
-  // Loops continuously during gameplay. Stops on overlays.
   bgm:            'bgm_main.mp3',
 
   // ── NOX ATTACKS ───────────────────────────────
-  nox_touch:      'sfx_nox_touch.mp3',       // melee hit lands
-  nox_aoe:        'sfx_nox_aoe.mp3',         // AOE pulse fires
-  nox_range:      'sfx_nox_range.mp3',       // range beam fires
-  nox_miss:       'sfx_nox_miss.mp3',        // ability whiffs (out of range)
+  nox_touch:      'sfx_nox_touch.wav',
+  nox_aoe:        'sfx_nox_aoe.wav',
+  nox_range:      'sfx_nox_range.wav',
+  nox_miss:       'sfx_nox_miss.wav',
 
   // ── DRONE EVENTS ──────────────────────────────
-  drone_attack:   'sfx_drone_attack.mp3',    // any drone fires at Nox
-  drone_hit:      'sfx_drone_hit.mp3',       // drone takes damage
-  drone_kill:     'sfx_drone_kill.mp3',      // drone neutralised (green flash)
+  drone_attack:   'sfx_drone_attack.wav',
+  drone_hit:      'sfx_drone_hit.wav',
+  drone_kill:     'sfx_drone_kill.wav',
 
   // ── NOX DAMAGE ────────────────────────────────
-  nox_hit:        'sfx_nox_hit.mp3',         // Nox takes a hit (red glitch)
-  nox_critical:   'sfx_nox_critical.mp3',    // Nox HP drops below 25%
+  nox_hit:        'sfx_nox_hit.wav',
+  nox_critical:   'sfx_nox_critical.wav',
 
   // ── ROUND EVENTS ──────────────────────────────
-  round_start:    'sfx_round_start.mp3',     // round begins
-  round_win:      'sfx_round_win.mp3',       // round cleared
-  round_fail:     'sfx_round_fail.mp3',      // round lost
-  countdown_tick: 'sfx_countdown_tick.mp3',  // each second 6→1
-  countdown_final:'sfx_countdown_final.mp3', // the "1" beat
+  round_start:    'sfx_round_start.wav',
+  round_win:      'sfx_round_win.wav',
+  round_fail:     'sfx_round_fail.wav',
+  countdown_tick: 'sfx_countdown_tick.wav',
+  countdown_final:'sfx_countdown_final.wav',
 
   // ── GAME EVENTS ───────────────────────────────
-  archive_unlock: 'sfx_archive_unlock.mp3',  // lore screen appears (final win)
-  redact_reveal:  'sfx_redact_reveal.mp3',   // player clicks a redacted block
+  archive_unlock: 'sfx_archive_unlock.wav',
+  redact_reveal:  'sfx_redact_reveal.wav',
 };
 
 // ── AUDIO ENGINE ──────────────────────────────────────────
