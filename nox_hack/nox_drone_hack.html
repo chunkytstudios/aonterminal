@@ -787,105 +787,178 @@ const AUDIO_FILES = {
 };
 
 // ── AUDIO ENGINE ──────────────────────────────────────────
-// Browsers block audio until the user interacts with the page.
-// We unlock the audio context on the first click anywhere, then
-// preload every file so they're ready to fire instantly.
+// Uses AudioContext to bypass iframe autoplay restrictions.
+// All sounds are decoded into AudioBuffers and played via
+// the context — this works regardless of how the page is loaded.
 
-let _audioUnlocked = false;
-const _audioCache = {};
+let _actx = null;
+const _buffers = {};
+let _bgmSource = null;
+let _bgmGain = null;
 
-function _buildCache() {
+function _getContext() {
+  if (!_actx) {
+    try { _actx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+  }
+  return _actx;
+}
+
+async function _loadBuffer(key, file) {
+  try {
+    const ctx = _getContext();
+    if (!ctx) return;
+    const res = await fetch(file);
+    if (!res.ok) return;
+    const arr = await res.arrayBuffer();
+    _buffers[key] = await ctx.decodeAudioData(arr);
+  } catch(e) {}
+}
+
+function _preloadAll() {
   Object.entries(AUDIO_FILES).forEach(([key, file]) => {
-    if (!file || key === 'bgm') return;
-    try {
-      const a = new Audio(file);
-      a.preload = 'auto';
-      _audioCache[key] = a;
-    } catch(e) {}
+    if (file) _loadBuffer(key, file);
   });
 }
 
+// Called on first user interaction — resumes context if suspended
 function _unlockAudio() {
-  if (_audioUnlocked) return;
-  _audioUnlocked = true;
-  // Play and immediately pause a silent buffer to unlock the audio context
-  Object.values(_audioCache).forEach(a => {
-    a.play().then(() => a.pause()).catch(() => {});
-    a.currentTime = 0;
-  });
-  if (_bgm) {
-    _bgm.play().then(() => _bgm.pause()).catch(() => {});
-    _bgm.currentTime = 0;
+  const ctx = _getContext();
+  if (ctx && ctx.state === 'suspended') {
+    ctx.resume().then(() => _preloadAll()).catch(() => {});
   }
 }
 
-// Unlock audio when parent terminal signals it's safe
-// (fires within the user-gesture chain of the click that opened the iframe)
+// Listen for postMessage from parent terminal
 window.addEventListener('message', (e) => {
   if (e.data === 'unlock_audio') _unlockAudio();
 });
 
-// Build cache immediately
-_buildCache();
-
-// Unlock on any user interaction — covers all input types
+// Also unlock on any direct interaction within the iframe
 ['click','keydown','touchstart'].forEach(evt => {
   document.addEventListener(evt, _unlockAudio, { once: false, passive: true });
 });
 
+// Start preloading immediately — context will resume on first gesture
+_preloadAll();
+
 function sfx(key, options = {}) {
-  const file = AUDIO_FILES[key];
-  if (!file) return;
   try {
-    const a = _audioCache[key];
-    if (!a) return;
-    a.volume = options.volume !== undefined ? options.volume : 1.0;
-    a.currentTime = 0;
-    const p = a.play();
-    if (p) p.catch(() => {});
+    const ctx = _getContext();
+    if (!ctx || !_buffers[key]) return;
+    const src = ctx.createBufferSource();
+    src.buffer = _buffers[key];
+    const gain = ctx.createGain();
+    gain.gain.value = options.volume !== undefined ? options.volume : 1.0;
+    src.connect(gain);
+    gain.connect(ctx.destination);
+    src.start(0);
   } catch(e) {}
 }
 
-// BGM — separate instance, loops independently
-let _bgm = null;
-
-function _initBgm() {
-  if (_bgm || !AUDIO_FILES.bgm) return;
-  try {
-    _bgm = new Audio(AUDIO_FILES.bgm);
-    _bgm.loop = true;
-    _bgm.volume = 0.45;
-    _bgm.preload = 'auto';
-  } catch(e) {}
-}
-_initBgm();
+// BGM — looping buffer source
+let _bgm = null; // kept for compat
+let _bgmPlaying = false;
+let _bgmRetryTimer = null;
 
 function bgmPlay() {
-  if (!_bgm) return;
   try {
-    _bgm.currentTime = 0;
-    _bgm.volume = 0.45;
-    const p = _bgm.play();
-    if (p) p.catch(() => {});
+    const ctx = _getContext();
+    if (!ctx) return;
+    if (_bgmPlaying) return;
+    // If buffer not ready yet, retry every 200ms until it is
+    if (!_buffers.bgm) {
+      if (!_bgmRetryTimer) {
+        _bgmRetryTimer = setInterval(() => {
+          if (_buffers.bgm) {
+            clearInterval(_bgmRetryTimer);
+            _bgmRetryTimer = null;
+            bgmPlay();
+          }
+        }, 200);
+      }
+      return;
+    }
+    _bgmGain = ctx.createGain();
+    _bgmGain.gain.value = 0.45;
+    _bgmGain.connect(ctx.destination);
+    _bgmSource = ctx.createBufferSource();
+    _bgmSource.buffer = _buffers.bgm;
+    _bgmSource.loop = true;
+    _bgmSource.connect(_bgmGain);
+    _bgmSource.start(0);
+    _bgmPlaying = true;
   } catch(e) {}
 }
 
 function bgmStop() {
-  if (_bgm) { _bgm.pause(); _bgm.currentTime = 0; }
+  try {
+    if (_bgmRetryTimer) { clearInterval(_bgmRetryTimer); _bgmRetryTimer = null; }
+    if (_bgmSource) { _bgmSource.stop(); _bgmSource = null; }
+    _bgmPlaying = false;
+  } catch(e) {}
 }
 
 function bgmFade(duration = 800) {
-  if (!_bgm) return;
-  const step = _bgm.volume / (duration / 50);
-  const fade = setInterval(() => {
-    if (_bgm.volume > step) {
-      _bgm.volume = Math.max(0, _bgm.volume - step);
-    } else {
-      _bgm.volume = 0;
-      _bgm.pause();
-      clearInterval(fade);
-    }
-  }, 50);
+  try {
+    if (!_bgmGain || !_bgmPlaying) return;
+    const ctx = _getContext();
+    const now = ctx.currentTime;
+    _bgmGain.gain.setValueAtTime(_bgmGain.gain.value, now);
+    _bgmGain.gain.linearRampToValueAtTime(0, now + duration / 1000);
+    setTimeout(() => { bgmStop(); }, duration + 50);
+  } catch(e) {}
+}
+
+// Stoppable tick source — so countdown doesn't bleed into win/fail screen
+let _tickSource = null;
+
+function sfxTick(key, options = {}) {
+  try {
+    const ctx = _getContext();
+    if (!ctx || !_buffers[key]) return;
+    // Stop any previous tick still playing
+    if (_tickSource) { try { _tickSource.stop(); } catch(e) {} _tickSource = null; }
+    const src = ctx.createBufferSource();
+    src.buffer = _buffers[key];
+    const gain = ctx.createGain();
+    gain.gain.value = options.volume !== undefined ? options.volume : 1.0;
+    src.connect(gain);
+    gain.connect(ctx.destination);
+    src.start(0);
+    _tickSource = src;
+    src.onended = () => { if (_tickSource === src) _tickSource = null; };
+  } catch(e) {}
+}
+
+function stopTick() {
+  if (_tickSource) { try { _tickSource.stop(); } catch(e) {} _tickSource = null; }
+}
+
+// Looping sfx — for ambient sounds that should play until explicitly stopped
+let _loopSource = null;
+let _loopGain = null;
+
+function sfxLoop(key, options = {}) {
+  try {
+    stopLoop(); // stop any previous loop first
+    const ctx = _getContext();
+    if (!ctx || !_buffers[key]) return;
+    _loopGain = ctx.createGain();
+    _loopGain.gain.value = options.volume !== undefined ? options.volume : 1.0;
+    _loopGain.connect(ctx.destination);
+    _loopSource = ctx.createBufferSource();
+    _loopSource.buffer = _buffers[key];
+    _loopSource.loop = true;
+    _loopSource.connect(_loopGain);
+    _loopSource.start(0);
+  } catch(e) {}
+}
+
+function stopLoop() {
+  try {
+    if (_loopSource) { _loopSource.stop(); _loopSource = null; }
+    _loopGain = null;
+  } catch(e) {}
 }
 
 let state = {
@@ -1624,7 +1697,7 @@ function updateTimerDisplay() {
     cd.classList.remove('pop');
     void cd.offsetWidth;
     cd.classList.add('pop');
-    sfx(state.timer === 1 ? 'countdown_final' : 'countdown_tick');
+    sfxTick(state.timer === 1 ? 'countdown_final' : 'countdown_tick');
   } else {
     cd.style.display = 'none';
     cd.classList.remove('pop');
@@ -1636,6 +1709,8 @@ function endRound(won, reason) {
   clearInterval(state.timerInterval);
   clearInterval(state.attackLoop);
   clearInterval(state.noxLoop);
+  stopTick();
+  stopLoop();
   const cd = document.getElementById('final-countdown');
   cd.style.display = 'none';
   cd.classList.remove('pop');
@@ -1678,7 +1753,7 @@ function endRound(won, reason) {
   } else {
     // FINAL WIN — lore unlock
     bgmFade(1200);
-    sfx('archive_unlock');
+    sfxLoop('archive_unlock');
     setTimeout(() => document.getElementById('lore-overlay').classList.remove('hidden'), 600);
   }
 }
